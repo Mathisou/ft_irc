@@ -1,5 +1,5 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 #include <iostream>
 #include <string>
@@ -11,24 +11,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-class Server{
-
+class client{
 	private:
-
-	int _sockserver;
-	//int _sockclient;
-	const std::string _port;
-	const std::string _password;
+	int _sockclient;
+	std::string _port;
+	std::string _password;
 
 	public:
-
-	Server(const std::string &port, const std::string &password);
-	~Server();
-	void connectToServer();
-	int newSocket();
+	client(const std::string &port, const std::string &password);
+	~client();
 	void sendMessage(std::string message) const;
 	std::string receiveMessage() const;
-
+	int newSocket();
 };
 
 #endif

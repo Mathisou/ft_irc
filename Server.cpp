@@ -1,4 +1,5 @@
 #include "Server.hpp"
+			         #include <string.h>
 
 Server::Server(const std::string &port, const std::string &password) : _port(port), _password(password){
 	this->_sockserver = newSocket();
@@ -22,38 +23,47 @@ int Server::newSocket()
 	server.sin_family = AF_INET;
 	if (bind(sock, (const struct sockaddr*)&server, sizeof(server)) < 0)
 		throw std::runtime_error("Error binding socket.\n");
-	// std::cout << "bind" << std::endl;
 	if (listen(sock, 1000) < 0)
 		throw std::runtime_error("Error listening on socket.\n");
-	// std::cout << "listen" << std::endl;
+	struct sockaddr_in client;
+	socklen_t csize = sizeof(client);
+	if (accept(sock, (struct sockaddr*)&client, &csize) < 0)
+	{
+		std::cout << strerror(errno) << std::endl;
+		throw std::runtime_error("Error accepting new socket.\n");
+	}
+	std::cout << "accept" << std::endl;
 	return sock;
 }
 
 void Server::connectToServer()
 {
-
+	pollfd server_fd = {_sockserver, POLLIN, 0};
+	std::cout << "listening..." << std::endl;
+	while (1)
+	{
+		if (poll(&server_fd, 1, -1) < 0)
+			throw std::runtime_error("Error while polling from fd.");
+		// this->sendMessage("JOIN #mychannel\r\n");
+		std::cout << "poll" << std::endl;
+		// std::cout << this->receiveMessage() << std::endl;
+	}
 }
 
 // void Server::sendMessage(std::string message) const
 // {
-// 	if (send(this->_sock, sr(), message.size(), 0) < 0)
-// 	{
+// 	if (send(this->_sockserver, message.c_str(), message.size(), 0) < 0)
 // 		std::cerr << "Error sending message." << std::endl;
-// 		exit(1);
-// 	}
 // }
 
-// std::string Server::receiveMessage() const
-// {
-// 	char buffer[1024];
-// 	std::string message;
+std::string Server::receiveMessage() const
+{
+	char buffer[1024];
+	std::string message;
 
-// 	if (recv(this->_sock, buffer, 1024, 0) < 0)
-// 	{
-// 		std::cerr << "Error receiving message" << std::endl;
-// 		exit(1);
-// 	}
+	if (recv(this->_sockserver, buffer, 1024, 0) < 0)
+		throw std::runtime_error("Error receiving message");
 
-// 	message = buffer;
-// 	return message;
-// }
+	message = buffer;
+	return message;
+}
