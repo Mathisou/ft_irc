@@ -1,9 +1,7 @@
 #include "Client.hpp"
-       #include <errno.h>
-	          #include <stdio.h>
-			         #include <string.h>
-
-
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 
 client::client(const std::string &port, const std::string &password) : _port(port), _password(password){
@@ -20,8 +18,6 @@ int client::newSocket()
 	int tmp = 1;
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &tmp, sizeof(tmp)))
 		throw std::runtime_error("Error while setting up socket.\n");
-	if (fcntl(sock, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("Error while setting socket NON-BLOCKING mode.\n");
 	struct sockaddr_in client;
 	client.sin_addr.s_addr = INADDR_ANY;
 	client.sin_port = htons(std::stoi(_port));
@@ -35,19 +31,26 @@ int client::newSocket()
 
 void client::sendMessage(std::string message) const
 {
-	message += "\r\n";
+	message += "\r\n\0";
 	if (send(this->_sockclient, message.c_str(), message.length(), 0) < 0)
 		throw std::runtime_error("Error sending message.");
 }
 
-// std::string Server::receiveMessage() const
-// {
-// 	char buffer[1024];
-// 	std::string message;
+int client::verifpswd(std::string pswd)
+{
+	this->sendMessage(pswd);
+	return (0);
+}
 
-// 	if (recv(this->_sockclient, buffer, 1024, 0) < 0)
-// 		throw std::runtime_error("Error receiving message");
+std::string client::receiveMessage() const
+{
+	char buffer[1024];
+	std::string message;
 
-// 	message = buffer;
-// 	return message;
-// }
+	memset(buffer, 0, 1024);
+
+	if (recv(this->_sockclient, buffer, 1024, 0) < 0)
+		throw std::runtime_error("Error receiving message");
+	message = buffer;
+	return message;
+}

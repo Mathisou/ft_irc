@@ -1,5 +1,5 @@
 #include "Server.hpp"
-			         #include <string.h>
+#include <string.h>
 
 Server::Server(const std::string &port, const std::string &password) : _port(port), _password(password){
 	this->_sockserver = newSocket();
@@ -25,13 +25,11 @@ int Server::newSocket()
 		throw std::runtime_error("Error binding socket.\n");
 	if (listen(sock, 1000) < 0)
 		throw std::runtime_error("Error listening on socket.\n");
-	struct sockaddr_in client;
-	socklen_t csize = sizeof(client);
-	if (accept(sock, (struct sockaddr*)&client, &csize) < 0)
-	{
-		std::cout << strerror(errno) << std::endl;
-		throw std::runtime_error("Error accepting new socket.\n");
-	}
+	// if (accept(sock, (struct sockaddr*)&client, &csize) < 0)
+	// {
+	// 	std::cout << strerror(errno) << std::endl;
+	// 	throw std::runtime_error("Error accepting new socket.\n");
+	// }
 	std::cout << "accept" << std::endl;
 	return sock;
 }
@@ -44,26 +42,33 @@ void Server::connectToServer()
 	{
 		if (poll(&server_fd, 1, -1) < 0)
 			throw std::runtime_error("Error while polling from fd.");
-		// this->sendMessage("JOIN #mychannel\r\n");
 		std::cout << "poll" << std::endl;
-		// std::cout << this->receiveMessage() << std::endl;
+		struct sockaddr_in client;
+		socklen_t csize = sizeof(client);
+		this->_sockcom = accept(_sockserver, (struct sockaddr*)&client, &csize);
+		sendMessage("Enter the server password.");
+		std::cout << this->receiveMessage();
+		std::cout << _sockcom << std::endl;
 	}
 }
 
-// void Server::sendMessage(std::string message) const
-// {
-// 	if (send(this->_sockserver, message.c_str(), message.size(), 0) < 0)
-// 		std::cerr << "Error sending message." << std::endl;
-// }
+void Server::sendMessage(std::string message) const
+{
+	message += "\r\n";
+	if (send(this->_sockcom, message.c_str(), message.length(), 0) < 0)
+		throw std::runtime_error("Error sending message.");
+}
 
 std::string Server::receiveMessage() const
 {
 	char buffer[1024];
 	std::string message;
+	memset(buffer, 0, 1024);
 
-	if (recv(this->_sockserver, buffer, 1024, 0) < 0)
+	if (recv(this->_sockcom, buffer, 1024, 0) < 0){
+		std::cout << strerror(errno) << std::endl;
 		throw std::runtime_error("Error receiving message");
-
+	}
 	message = buffer;
 	return message;
 }

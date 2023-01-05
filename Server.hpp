@@ -16,7 +16,7 @@ class Server{
 	private:
 
 	int _sockserver;
-	//int _sockclient;
+	int _sockcom;
 	const std::string _port;
 	const std::string _password;
 

@@ -23,6 +23,7 @@ class client{
 	void sendMessage(std::string message) const;
 	std::string receiveMessage() const;
 	int newSocket();
+	int verifpswd(std::string pswd);
 };
 
 #endif
