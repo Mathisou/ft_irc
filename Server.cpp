@@ -47,14 +47,20 @@ void Server::connectToServer()
 		socklen_t csize = sizeof(client);
 		this->_sockcom = accept(_sockserver, (struct sockaddr*)&client, &csize);
 		sendMessage("Enter the server password.");
-		while (1)
+	/*while (1)
 		{
-			std::cout << this->receiveMessage();
 			std::string pswd;
 			std::cin >> pswd;
 			this->sendMessage(pswd);
 			// std::cout << _sockcom << std::endl;
-		}
+		}*/
+			std::cout << this->receiveMessage();
+			sendMessage("CAP * LS :multi-prefix sasl");
+			std::cout << this->receiveMessage();
+			sendMessage("CAP * ACK multi-prefix");
+			std::cout << this->receiveMessage();
+			sendMessage("001 pi :Welcome to the Internet Relay Network pi");
+			std::cout << this->receiveMessage();
 	}
 }
 
