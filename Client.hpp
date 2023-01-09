@@ -5,25 +5,20 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
-#include <fcntl.h>
-#include <poll.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 
 class client{
 	private:
-	int _sockclient;
-	std::string _port;
-	std::string _password;
+	std::string _nick;
+	std::string _user;
+	std::string _hostname;
+	std::string _real_name;
+	bool _is_connect;
+	bool _is_oper;
 
 	public:
-	client(const std::string &port, const std::string &password);
+	client(std::string nick, std::string user, std::string hostname, std::string real_name);
 	~client();
-	void sendMessage(std::string message) const;
-	std::string receiveMessage() const;
-	int newSocket();
-	int verifpswd(std::string pswd);
 };
 
 #endif
