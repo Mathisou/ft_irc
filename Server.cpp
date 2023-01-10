@@ -42,33 +42,18 @@ int Server::newSocket()
 
 void Server::connectToServer()
 {
-	// std::string buffer;
 	char buffer[1025];
-	// pollfd server_fd = {_sockserver, POLLIN, 0};
 	fd_set readfds;
 	int client_socket[max_clients], sd, activity, max_sd, valread;
 	for (int i = 0; i < max_clients; i++)  
     {  
         client_socket[i] = 0;  
     }  
-	// struct sockaddr_in client;
 	socklen_t csize = sizeof(server);
 	std::cout << "listening..." << std::endl;
 	while (1)
 	{
-		// if (poll(&server_fd, 1, -1) < 0)
-		// 	throw std::runtime_error("Error while polling from fd.");
-		// std::cout << "poll" << std::endl;
-		// this->_sockcom = accept(_sockserver, (struct sockaddr*)&client, &csize);
-		// sendMessage("Enter the server password.");
-	/*while (1)
-		{
-			std::string pswd;
-			std::cin >> pswd;
-			this->sendMessage(pswd);
-			// std::cout << _sockcom << std::endl;
-		}*/
-		       //clear the socket set 
+		//clear the socket set 
         FD_ZERO(&readfds);  
      
         //add master socket to set 
@@ -101,30 +86,49 @@ void Server::connectToServer()
 
 		if (FD_ISSET(this->_sockserver, &readfds))  
         {  
-            if ((this->_sockcom = accept(this->_sockserver, 
-                    (struct sockaddr *)&server, &csize))<0)  
+            if ((this->_sockcom = accept(this->_sockserver, (struct sockaddr *)&server, &csize)) < 0)
             {  
                 perror("accept");  
                 exit(EXIT_FAILURE);  
             }  
-             
             //inform user of socket number - used in send and receive commands 
-            // printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , this->_sockcom , inet_ntoa(address.sin_addr) , ntohs
-            //       (address.sin_port));  
-           
+            printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , this->_sockcom , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));  
+			std::string ret;
             //send new connection greeting message
 			sendMessage("CAP * LS :multi-prefix sasl");
-			std::cout << this->receiveMessage();
 			sendMessage("CAP * ACK multi-prefix");
-			std::cout << this->receiveMessage();
 			sendMessage("001 maroly :Welcome to the Internet Relay Network maroly");
-			std::cout << this->receiveMessage();
-            // if( send(this->_sockcom, message, strlen(message), 0) != strlen(message) )  
-            // {  
-            //     perror("send");  
-            // }  
-                 
-            // puts("Welcome message sent successfully");  
+			int occ;
+			std::string nick, user, host, real_name;
+			while ((ret = this->receiveMessage()).find("CAP END") == std::string::npos)
+			{
+				//split buffer to stock informations
+				if ((occ = ret.find("NICK")) != std::string::npos)
+				{
+					// for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+					// {
+					// 	nick += ret[occ + 5 + i];
+					// }
+					// std::cout << "nickname: " << nick << std::endl;
+				}
+				if ((occ = ret.find("USER")) != std::string::npos)
+				{
+
+				}
+					// client patrick(nick, user, host, ....);
+					// this->_users.insert(std::make_pair(patrick.getNick(), &patrick));
+
+			}
+			
+	// 		"Welcome to the Internet Relay Network
+    //            <nick>!<user>@<host>"
+    //    002    RPL_YOURHOST
+    //           "Your host is <servername>, running version 1.0"
+    //    003    RPL_CREATED
+    //           "This server was created 05/01/23"
+    //    004    RPL_MYINFO
+    //           "<servername> 1.0 <available user modes>
+    //            <available channel modes>"
                  
             //add new socket to array of sockets 
             for (int i = 0; i < max_clients; i++)  
@@ -146,33 +150,47 @@ void Server::connectToServer()
 				sd = client_socket[i];  
 				if (FD_ISSET( sd , &readfds))  
 				{
+					memset(buffer, 0, 1025);
 					//Check if it was for closing , and also read the 
 					//incoming message
 					// if ((valread = recv( sd , buffer, 1024, 0)) == 0)
-					recv( sd , buffer, 1024, 0);
-					if (strcmp(buffer, "QUIT :leaving"))  
-					{  
-						//Somebody disconnected , get his details and print 
-						getpeername(sd , (struct sockaddr*)&server , &csize);  
-						printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));  
+					if ((valread = recv( sd , buffer, 1024, 0)) > 0)
+					{
+						std::cout << "\033[1;31mRECV RETOUR :\033[0m " << buffer;
+						// if (buffer.find("PING") == 0)
+						// {
+						// 	std::cout << "DSAHDKJASHKJDHSKJHDASKJH " << buffer << std::endl;
+						// 	buffer[1] = 'O';
+						// 	sendMessage(buffer);
+						// }
+						if (strcmp(buffer, "QUIT :leaving\r\n") == 0)  
+						{  
+							//Somebody disconnected , get his details and print 
+							getpeername(sd , (struct sockaddr*)&server , &csize);  
+							printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));  
+								
+							//Close the socket and mark as 0 in list for reuse 
+							close( sd );  
+							client_socket[i] = 0;  
+						}  
 							
-						//Close the socket and mark as 0 in list for reuse 
-						close( sd );  
-						client_socket[i] = 0;  
-					}  
-						
-					//Echo back the message that came in 
-					else 
-					{  
-						//set the string terminating NULL byte on the end 
-						//of the data read
-						std::cout << "valread is " << valread << std::endl;
-						std::cout << strerror(errno) << std::endl;
-						buffer[valread] = '\0'; 
-						std::cout << buffer << std::endl;
-						send(sd , buffer , strlen(buffer) , 0 );
-						break;
-					}  
+						//Echo back the message that came in 
+						else 
+						{
+							//set the string terminating NULL byte on the end 
+							//of the data read
+							// if (strncmp(buffer, "PING", 4) == 0)
+							// 	buffer[1] = 'O';
+							// else if (strncmp(buffer, "PONG", 4) == 0)
+							// 	buffer[1] = 'I';
+							std::cout << "valread is " << valread << std::endl;
+							std::cout << strerror(errno) << std::endl;
+							buffer[valread] = '\0'; 
+							std::cout << buffer << std::endl;
+							send(sd , buffer , strlen(buffer) , 0 );
+							break;
+						}  
+					}
 				}  
 			}
 		}
@@ -223,6 +241,8 @@ std::string Server::receiveMessage() const
 		std::cout << strerror(errno) << std::endl;
 		throw std::runtime_error("Error receiving message");
 	}
+
+	std::cout << "BUFFER : " << buffer;
 	message = buffer;
 	return message;
 }
