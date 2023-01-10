@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include <string.h>
 #include "Command.cpp"
+#include "Client.hpp"
 
 #define max_clients 10
 
@@ -45,81 +46,114 @@ void Server::connectToServer()
 	char buffer[1025];
 	fd_set readfds;
 	int client_socket[max_clients], sd, activity, max_sd, valread;
-	for (int i = 0; i < max_clients; i++)  
-    {  
-        client_socket[i] = 0;  
-    }  
+	for (int i = 0; i < max_clients; i++)
+    {
+        client_socket[i] = 0;
+    }
 	socklen_t csize = sizeof(server);
 	std::cout << "listening..." << std::endl;
 	while (1)
 	{
-		//clear the socket set 
-        FD_ZERO(&readfds);  
-     
-        //add master socket to set 
-        FD_SET(this->_sockserver, &readfds);  
-        max_sd = this->_sockserver;  
-             
-        //add child sockets to set 
-        for ( int i = 0 ; i < max_clients ; i++)  
-        {  
-            //socket descriptor 
-            sd = client_socket[i];  
-                 
-            //if valid socket descriptor then add to read list 
-            if(sd > 0)  
-                FD_SET( sd , &readfds);  
-                 
-            //highest file descriptor number, need it for the select function 
-            if(sd > max_sd)  
-                max_sd = sd;  
-        }  
-     
-        //wait for an activity on one of the sockets , timeout is NULL , 
-        //so wait indefinitely 
-        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);  
-       
-        if ((activity < 0) && (errno!=EINTR))  
-        {  
-            printf("select error");  
+		//clear the socket set
+        FD_ZERO(&readfds);
+
+        //add master socket to set
+        FD_SET(this->_sockserver, &readfds);
+        max_sd = this->_sockserver;
+
+        //add child sockets to set
+        for ( int i = 0 ; i < max_clients ; i++)
+        {
+            //socket descriptor
+            sd = client_socket[i];
+
+            //if valid socket descriptor then add to read list
+            if(sd > 0)
+                FD_SET( sd , &readfds);
+
+            //highest file descriptor number, need it for the select function
+            if(sd > max_sd)
+                max_sd = sd;
         }
 
-		if (FD_ISSET(this->_sockserver, &readfds))  
-        {  
+        //wait for an activity on one of the sockets , timeout is NULL ,
+        //so wait indefinitely
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
+
+        if ((activity < 0) && (errno!=EINTR))
+        {
+            printf("select error");
+        }
+
+		if (FD_ISSET(this->_sockserver, &readfds))
+        {
             if ((this->_sockcom = accept(this->_sockserver, (struct sockaddr *)&server, &csize)) < 0)
-            {  
-                perror("accept");  
-                exit(EXIT_FAILURE);  
-            }  
-            //inform user of socket number - used in send and receive commands 
-            printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , this->_sockcom , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));  
+            {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+            //inform user of socket number - used in send and receive commands
+            printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , this->_sockcom , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));
 			std::string ret;
             //send new connection greeting message
 			sendMessage("CAP * LS :multi-prefix sasl");
 			sendMessage("CAP * ACK multi-prefix");
-			sendMessage("001 maroly :Welcome to the Internet Relay Network maroly");
+			// sendMessage("001 maroly :Welcome to the Internet Relay Network maroly");
 			int occ;
-			std::string nick, user, host, real_name;
+			char *nick, *user, *host, *real_name, *buffer;
+			host = NULL;
 			while ((ret = this->receiveMessage()).find("CAP END") == std::string::npos)
 			{
+				if (host == NULL)
+				{
+					buffer = strtok((char *)ret.c_str(), " \r\n");
+					while (buffer)
+					{
+						if (strcmp(buffer, "NICK") == 0)
+						{
+							buffer = strtok(0, " \r\n");
+							nick = buffer;
+						}
+						if (strcmp(buffer, "USER") == 0)
+						{
+							buffer = strtok(0, " \r\n");
+							user = buffer;
+							buffer = strtok(0, " \r\n");
+							real_name = buffer;
+							buffer = strtok(0, " \r\n");
+							host = buffer;
+						}
+						buffer = strtok(0, " \r\n");
+					}
+					// Client _client((std::string)nick, (std::string)user, (std::string)host, (std::string)real_name);
+					std::cout << nick << " " << user << " " << host << " " << real_name << std::endl;
+				}
+				std::string msg1 = "001 ";
+				msg1 += (std::string)nick;
+				msg1 += " :Welcome to the Internet Relay Network ";
+				// std::cout << nick << std::endl;
+				// msg1 += (std::string)nick;
+				msg1 += "armendes";
+				sendMessage(msg1);
+				// sendMessage("001 armendes :Welcome to the Internet Relay Network armendes");
 				//split buffer to stock informations
-				if ((occ = ret.find("NICK")) != std::string::npos)
-				{
-					// for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
-					// {
-					// 	nick += ret[occ + 5 + i];
-					// }
-					// std::cout << "nickname: " << nick << std::endl;
-				}
-				if ((occ = ret.find("USER")) != std::string::npos)
-				{
-
-				}
+				// if ((occ = ret.find("NICK")) != std::string::npos)
+				// {
+				// 	// for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+				// 	// {
+				// 	// 	nick += ret[occ + 5 + i];
+				// 	// }
+				// 	// std::cout << "nickname: " << nick << std::endl;
+				// }
+				// if ((occ = ret.find("USER")) != std::string::npos)
+				// {
+				//
+				// }
 					// client patrick(nick, user, host, ....);
 					// this->_users.insert(std::make_pair(patrick.getNick(), &patrick));
 
 			}
-			
+
 	// 		"Welcome to the Internet Relay Network
     //            <nick>!<user>@<host>"
     //    002    RPL_YOURHOST
@@ -129,29 +163,29 @@ void Server::connectToServer()
     //    004    RPL_MYINFO
     //           "<servername> 1.0 <available user modes>
     //            <available channel modes>"
-                 
-            //add new socket to array of sockets 
-            for (int i = 0; i < max_clients; i++)  
-            {  
-                //if position is empty 
-                if( client_socket[i] == 0 )  
+
+            //add new socket to array of sockets
+            for (int i = 0; i < max_clients; i++)
+            {
+                //if position is empty
+                if( client_socket[i] == 0 )
                 {
-                    client_socket[i] = this->_sockcom;  
-                    printf("Adding to list of sockets as %d\n" , i);  
-                         
-                    break;  
+                    client_socket[i] = this->_sockcom;
+                    printf("Adding to list of sockets as %d\n" , i);
+
+                    break;
                 }
             }
 		}
 		else
 		{
-			for (int i = 0; i < max_clients; i++)  
-			{ 
-				sd = client_socket[i];  
-				if (FD_ISSET( sd , &readfds))  
+			for (int i = 0; i < max_clients; i++)
+			{
+				sd = client_socket[i];
+				if (FD_ISSET( sd , &readfds))
 				{
 					memset(buffer, 0, 1025);
-					//Check if it was for closing , and also read the 
+					//Check if it was for closing , and also read the
 					//incoming message
 					// if ((valread = recv( sd , buffer, 1024, 0)) == 0)
 					if ((valread = recv( sd , buffer, 1024, 0)) > 0)
@@ -163,21 +197,21 @@ void Server::connectToServer()
 						// 	buffer[1] = 'O';
 						// 	sendMessage(buffer);
 						// }
-						if (strcmp(buffer, "QUIT :leaving\r\n") == 0)  
-						{  
-							//Somebody disconnected , get his details and print 
-							getpeername(sd , (struct sockaddr*)&server , &csize);  
-							printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));  
-								
-							//Close the socket and mark as 0 in list for reuse 
-							close( sd );  
-							client_socket[i] = 0;  
-						}  
-							
-						//Echo back the message that came in 
-						else 
+						if (strcmp(buffer, "QUIT :leaving\r\n") == 0)
 						{
-							//set the string terminating NULL byte on the end 
+							//Somebody disconnected , get his details and print
+							getpeername(sd , (struct sockaddr*)&server , &csize);
+							printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));
+
+							//Close the socket and mark as 0 in list for reuse
+							close( sd );
+							client_socket[i] = 0;
+						}
+
+						//Echo back the message that came in
+						else
+						{
+							//set the string terminating NULL byte on the end
 							//of the data read
 							// if (strncmp(buffer, "PING", 4) == 0)
 							// 	buffer[1] = 'O';
@@ -185,13 +219,13 @@ void Server::connectToServer()
 							// 	buffer[1] = 'I';
 							std::cout << "valread is " << valread << std::endl;
 							std::cout << strerror(errno) << std::endl;
-							buffer[valread] = '\0'; 
+							buffer[valread] = '\0';
 							std::cout << buffer << std::endl;
 							send(sd , buffer , strlen(buffer) , 0 );
 							break;
-						}  
+						}
 					}
-				}  
+				}
 			}
 		}
 	}

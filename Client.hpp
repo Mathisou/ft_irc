@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
-class client{
+class Client{
 	private:
 	std::string _nick;
 	std::string _user;
@@ -17,8 +17,8 @@ class client{
 	bool _is_oper;
 
 	public:
-	client(std::string nick, std::string user, std::string hostname, std::string real_name);
-	~client();
+	Client(std::string nick, std::string user, std::string hostname, std::string real_name);
+	~Client();
 };
 
 #endif

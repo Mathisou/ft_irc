@@ -25,7 +25,7 @@ class Server{
 	int _sockcom;
 	const std::string _port;
 	const std::string _password;
-	std::map<std::string, client*> _users;
+	std::map<std::string, Client*> _users;
 	std::map<std::string, command> _commandhandler;
 	struct sockaddr_in server;
 
