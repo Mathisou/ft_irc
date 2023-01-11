@@ -1,4 +1,6 @@
 #include "Server.cpp"
+#include "Client.cpp"
+// #include "Command.cpp"
 
 int main(int ac, char **av)
 {

@@ -8,3 +8,23 @@ Client::Client(std::string nick, std::string user, std::string hostname, std::st
 }
 
 Client::~Client(){}
+
+std::string Client::getNick()
+{
+    return this->_nick;
+}
+
+std::string Client::getUser()
+{
+    return this->_user;
+}
+
+std::string Client::getHostname()
+{
+    return this->_hostname;
+}
+
+std::string Client::getReal_name()
+{
+    return this->_real_name;
+}

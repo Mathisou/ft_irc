@@ -11,13 +11,16 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "Client.hpp"
+#include "Command.cpp"
 #include <vector>
 #include <map>
+#include <string.h>
+
 
 class Server{
 	public:
 
-		typedef void (*command)(void);
+	typedef void (*command)(void);
 
 	private:
 
@@ -25,7 +28,7 @@ class Server{
 	int _sockcom;
 	const std::string _port;
 	const std::string _password;
-	std::map<std::string, Client*> _users;
+	std::map<int, Client*> _users;
 	std::map<std::string, command> _commandhandler;
 	struct sockaddr_in server;
 

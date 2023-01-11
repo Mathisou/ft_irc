@@ -1,7 +1,4 @@
 #include "Server.hpp"
-#include <string.h>
-#include "Command.cpp"
-#include "Client.hpp"
 
 #define max_clients 10
 
@@ -9,8 +6,6 @@ Server::Server(const std::string &port, const std::string &password) : _port(por
 	this->_sockserver = newSocket();
 	this->_commandhandler.insert(std::make_pair("NICK", &nick));
 	this->_commandhandler.insert(std::make_pair("userhost", &user));
-
-	// _users = NULL;
 }
 
 Server::~Server(){close(this->_sockserver);}
@@ -79,103 +74,176 @@ void Server::connectToServer()
         //wait for an activity on one of the sockets , timeout is NULL ,
         //so wait indefinitely
         activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
-
         if ((activity < 0) && (errno!=EINTR))
         {
             printf("select error");
         }
 
-		if (FD_ISSET(this->_sockserver, &readfds))
+		if (FD_ISSET(this->_sockserver, &readfds)) // connect new user
         {
             if ((this->_sockcom = accept(this->_sockserver, (struct sockaddr *)&server, &csize)) < 0)
             {
                 perror("accept");
                 exit(EXIT_FAILURE);
             }
+			std::
             //inform user of socket number - used in send and receive commands
             printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , this->_sockcom , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));
 			std::string ret;
             //send new connection greeting message
-			sendMessage("CAP * LS :multi-prefix sasl");
-			sendMessage("CAP * ACK multi-prefix");
-			// sendMessage("001 maroly :Welcome to the Internet Relay Network maroly");
 			int occ;
-			char *nick, *user, *host, *real_name, *buffer;
-			host = NULL;
-			while ((ret = this->receiveMessage()).find("CAP END") == std::string::npos)
+			bool is_pass_good = false;
+			std::string nick, user, host, server_name, real_name, pass, buffer;
+			do
 			{
-				if (host == NULL)
+				ret = this->receiveMessage();
+				if ((occ = ret.find("PASS")) != std::string::npos)
 				{
-					buffer = strtok((char *)ret.c_str(), " \r\n");
-					while (buffer)
+					for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
 					{
-						if (strcmp(buffer, "NICK") == 0)
-						{
-							buffer = strtok(0, " \r\n");
-							nick = buffer;
-						}
-						if (strcmp(buffer, "USER") == 0)
-						{
-							buffer = strtok(0, " \r\n");
-							user = buffer;
-							buffer = strtok(0, " \r\n");
-							real_name = buffer;
-							buffer = strtok(0, " \r\n");
-							host = buffer;
-						}
-						buffer = strtok(0, " \r\n");
+						pass += ret[occ + 5 + i];
 					}
-					// Client _client((std::string)nick, (std::string)user, (std::string)host, (std::string)real_name);
-					std::cout << nick << " " << user << " " << host << " " << real_name << std::endl;
+					if (pass.compare(this->_password) != 0)
+					{
+						is_pass_good = false;
+						sendMessage("WRONG PASSWORD");
+						break;
+					}
+					is_pass_good = true;
 				}
-				std::string msg1 = "001 ";
-				msg1 += (std::string)nick;
-				msg1 += " :Welcome to the Internet Relay Network ";
-				// std::cout << nick << std::endl;
-				// msg1 += (std::string)nick;
-				msg1 += "armendes";
-				sendMessage(msg1);
-				// sendMessage("001 armendes :Welcome to the Internet Relay Network armendes");
-				//split buffer to stock informations
+				if ((ret.find("CAP LS") == std::string::npos && is_pass_good == false) || (ret.find("CAP LS") != std::string::npos && ret.find("NICK") != std::string::npos && is_pass_good == false))
+				{
+					sendMessage("YOU HAVE TO PUT THE SERVER PASSWORD TO ENTER");
+					break;
+				}
+				// split buffer to stock informations : std::string ret(split(buffer.c_str(), " "))
+				if ((occ = ret.find("NICK")) != std::string::npos)
+				{
+					//nickname
+					for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+					{
+						nick += ret[occ + 5 + i];
+					}
+					std::cout << "nickname: " << nick << std::endl;
+				}
+				if ((occ = ret.find("USER")) != std::string::npos)
+				{
+					int i = 0;
+					//username
+					for (;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+					{
+						user += ret[occ + 5 + i];
+					}
+					std::cout << "username: " << user << std::endl;
+					//hostname
+					for (;ret[occ + 6 + i] && ret[occ + 6 + i] != ' ' && ret[occ + 6 + i] != '\n' && ret[occ + 6 + i] != '\r'; i++)
+					{
+						host += ret[occ + 6 + i];
+					}
+					std::cout << "hostname: " << host << std::endl;
+
+					//server_name
+					for (;ret[occ + 7 + i] && ret[occ + 7 + i] != ' ' && ret[occ + 7 + i] != '\n' && ret[occ + 7 + i] != '\r'; i++)
+					{
+						server_name += ret[occ + 7 + i];
+					}
+					std::cout << "server_name: " << server_name << std::endl;
+
+					//real_name
+					for (;ret[occ + 9 + i] && ret[occ + 9 + i] != '\n' && ret[occ + 9 + i] != '\r'; i++)
+					{
+						real_name += ret[occ + 9 + i];
+					}
+					std::cout << "real_name: " << real_name << std::endl;
+				}
+			}
+			while (ret.find("USER") == std::string::npos);
+			// {
+				// std::cout << "test" << std::endl;
+				// if ((occ = ret.find("PASS")) != std::string::npos)
+				// {
+				// 	for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+				// 	{
+				// 		pass += ret[occ + 5 + i];
+				// 	}
+				// 	if (pass.compare(this->_password) != 0)
+				// 	{
+				// 		is_pass_good = false;
+				// 		sendMessage("WRONG PASSWORD");
+				// 		break;
+				// 	}
+				// 	is_pass_good = true;
+				// }
+				// if (is_pass_good == false)
+				// {
+				// 	// sendMessage("YOU HAVE TO PUT THE SERVER PASSWORD TO ENTER");
+				// 	// close(this->_sockcom);
+				// 	break;
+				// }
+				// // split buffer to stock informations : std::string ret(split(buffer.c_str(), " "))
 				// if ((occ = ret.find("NICK")) != std::string::npos)
 				// {
-				// 	// for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
-				// 	// {
-				// 	// 	nick += ret[occ + 5 + i];
-				// 	// }
-				// 	// std::cout << "nickname: " << nick << std::endl;
+				// 	//nickname
+				// 	for (int i = 0;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+				// 	{
+				// 		nick += ret[occ + 5 + i];
+				// 	}
+				// 	std::cout << "nickname: " << nick << std::endl;
 				// }
 				// if ((occ = ret.find("USER")) != std::string::npos)
 				// {
-				//
+				// 	int i = 0;
+				// 	//username
+				// 	for (;ret[occ + 5 + i] && ret[occ + 5 + i] != ' ' && ret[occ + 5 + i] != '\n' && ret[occ + 5 + i] != '\r'; i++)
+				// 	{
+				// 		user += ret[occ + 5 + i];
+				// 	}
+				// 	std::cout << "username: " << user << std::endl;
+				// 	//hostname
+				// 	for (;ret[occ + 6 + i] && ret[occ + 6 + i] != ' ' && ret[occ + 6 + i] != '\n' && ret[occ + 6 + i] != '\r'; i++)
+				// 	{
+				// 		host += ret[occ + 6 + i];
+				// 	}
+				// 	std::cout << "hostname: " << host << std::endl;
+
+				// 	//server_name
+				// 	for (;ret[occ + 7 + i] && ret[occ + 7 + i] != ' ' && ret[occ + 7 + i] != '\n' && ret[occ + 7 + i] != '\r'; i++)
+				// 	{
+				// 		server_name += ret[occ + 7 + i];
+				// 	}
+				// 	std::cout << "server_name: " << server_name << std::endl;
+
+				// 	//real_name
+				// 	for (;ret[occ + 9 + i] && ret[occ + 9 + i] != '\n' && ret[occ + 9 + i] != '\r'; i++)
+				// 	{
+				// 		real_name += ret[occ + 9 + i];
+				// 	}
+				// 	std::cout << "real_name: " << real_name << std::endl;
 				// }
-					// client patrick(nick, user, host, ....);
-					// this->_users.insert(std::make_pair(patrick.getNick(), &patrick));
+			// }
+			if (is_pass_good == true)
+			{
+				Client new_user(nick, user, host, real_name);
+				this->_users.insert(std::make_pair(this->_sockcom, &new_user));
+				std::cout << "number of user connected to the server: " << this->_users.size() << std::endl;
+				sendMessage("001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host);
+				sendMessage("002 " + nick + " :Your host is " + server_name + ", running version 1.0");
+				sendMessage("003 " + nick + " :This server was created 05/01/23");
+				sendMessage("004 " + nick + " :" + server_name + " 1.0 ");
+				sendMessage("005 " + nick + " :Try server " + server_name + ", port 6667"); 
 
+				//add new socket to array of sockets
+				for (int i = 0; i < max_clients; i++)
+				{
+					//if position is empty
+					if( client_socket[i] == 0 )
+					{
+						client_socket[i] = this->_sockcom;
+						printf("Adding to list of sockets as %d\n" , i);
+						break;
+					}
+				}
 			}
-
-	// 		"Welcome to the Internet Relay Network
-    //            <nick>!<user>@<host>"
-    //    002    RPL_YOURHOST
-    //           "Your host is <servername>, running version 1.0"
-    //    003    RPL_CREATED
-    //           "This server was created 05/01/23"
-    //    004    RPL_MYINFO
-    //           "<servername> 1.0 <available user modes>
-    //            <available channel modes>"
-
-            //add new socket to array of sockets
-            for (int i = 0; i < max_clients; i++)
-            {
-                //if position is empty
-                if( client_socket[i] == 0 )
-                {
-                    client_socket[i] = this->_sockcom;
-                    printf("Adding to list of sockets as %d\n" , i);
-
-                    break;
-                }
-            }
 		}
 		else
 		{
@@ -184,27 +252,28 @@ void Server::connectToServer()
 				sd = client_socket[i];
 				if (FD_ISSET( sd , &readfds))
 				{
-					memset(buffer, 0, 1025);
+					memset(buffer, 0, 25);
 					//Check if it was for closing , and also read the
 					//incoming message
-					// if ((valread = recv( sd , buffer, 1024, 0)) == 0)
 					if ((valread = recv( sd , buffer, 1024, 0)) > 0)
 					{
-						std::cout << "\033[1;31mRECV RETOUR :\033[0m " << buffer;
-						// if (buffer.find("PING") == 0)
-						// {
-						// 	std::cout << "DSAHDKJASHKJDHSKJHDASKJH " << buffer << std::endl;
-						// 	buffer[1] = 'O';
-						// 	sendMessage(buffer);
-						// }
+						std::cout << "\033[1;34mRECV RETOUR :\033[0m " << buffer;
 						if (strcmp(buffer, "QUIT :leaving\r\n") == 0)
 						{
 							//Somebody disconnected , get his details and print
 							getpeername(sd , (struct sockaddr*)&server , &csize);
-							printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port));
-
+							//remove user to the map but how to find the nick ? Maybe replace the nick by the fd in the map
+							for (std::map<int, Client*>::iterator it = this->_users.begin(); it != this->_users.end(); it++)
+							{
+								if ((*it).first == sd){
+									this->_users.erase(it);
+									break;
+								}
+							}
+							printf("Host disconnected , ip %s , port %d , number of users: %ld\n" , inet_ntoa(server.sin_addr) , ntohs(server.sin_port), this->_users.size());
 							//Close the socket and mark as 0 in list for reuse
 							close( sd );
+							
 							client_socket[i] = 0;
 						}
 
@@ -213,10 +282,10 @@ void Server::connectToServer()
 						{
 							//set the string terminating NULL byte on the end
 							//of the data read
-							// if (strncmp(buffer, "PING", 4) == 0)
-							// 	buffer[1] = 'O';
-							// else if (strncmp(buffer, "PONG", 4) == 0)
-							// 	buffer[1] = 'I';
+							if (strncmp(buffer, "PING", 4) == 0)
+								buffer[1] = 'O';
+							else if (strncmp(buffer, "PONG", 4) == 0)
+								buffer[1] = 'I';
 							std::cout << "valread is " << valread << std::endl;
 							std::cout << strerror(errno) << std::endl;
 							buffer[valread] = '\0';
@@ -230,31 +299,10 @@ void Server::connectToServer()
 		}
 	}
 
-		// std::cout << this->receiveMessage();
-		// // std::cout << "test" << std::endl;
-		// sendMessage("CAP * LS :multi-prefix sasl");
-		// std::cout << this->receiveMessage();
-		// sendMessage("CAP * ACK multi-prefix");
-		// std::cout << this->receiveMessage();
-		// sendMessage("001 maroly :Welcome to the Internet Relay Network maroly");
-		// std::cout << this->receiveMessage();
-		// // while (1)
-		// // {
-		// 	buffer = this->receiveMessage();
-		// 	if (buffer.find("PING") == 0)
-		// 	{
-		// 		std::cout << "DSAHDKJASHKJDHSKJHDASKJH " << buffer << std::endl;
-		// 		buffer[1] = 'O';
-		// 		sendMessage(buffer);
-		// 	}
-		// 	else{
 		// 		std::string command = buffer.substr(0, buffer.find(' '));
 		// 		std::cout << "MY NICK: " << command << std::endl;
 		// 		if (_commandhandler.find(command) != _commandhandler.end())
 		// 			(_commandhandler[command])();
-		// 	}
-		// }
-	close(this->_sockcom);
 	close(this->_sockserver);
 }
 
@@ -276,7 +324,7 @@ std::string Server::receiveMessage() const
 		throw std::runtime_error("Error receiving message");
 	}
 
-	std::cout << "BUFFER : " << buffer;
+	std::cout << "BUFFER : " << buffer << "]\n";
 	message = buffer;
 	return message;
 }

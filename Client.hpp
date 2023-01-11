@@ -19,6 +19,11 @@ class Client{
 	public:
 	Client(std::string nick, std::string user, std::string hostname, std::string real_name);
 	~Client();
+	std::string getNick();
+	std::string getUser();
+	std::string getHostname();
+	std::string getReal_name();
+
 };
 
 #endif
