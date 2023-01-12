@@ -1,6 +1,8 @@
-#include "Server.cpp"
-#include "Client.cpp"
-// #include "Command.cpp"
+#include "Server.hpp"
+#include "Client.hpp"
+#include "Command.hpp"
+#include "RPL_ERR.hpp"
+#include "utils.hpp"
 
 int main(int ac, char **av)
 {

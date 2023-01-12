@@ -11,16 +11,24 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "Client.hpp"
-#include "Command.cpp"
+#include "Command.hpp"
 #include <vector>
 #include <map>
-#include <string.h>
+#include <cstring>
+#include <cstdlib>
+#include <cerrno>
+#include <cstdio>
+#include "RPL_ERR.hpp"
+#include "utils.hpp"
+
+# define SERVER_NAME "localhost"
+# define ver "1.0"
 
 
 class Server{
 	public:
 
-	typedef void (*command)(void);
+	typedef void (*command)(Server *, char *);
 
 	private:
 
@@ -31,6 +39,7 @@ class Server{
 	std::map<int, Client*> _users;
 	std::map<std::string, command> _commandhandler;
 	struct sockaddr_in server;
+	std::string _server_name;
 
 	public:
 
@@ -41,6 +50,8 @@ class Server{
 	int newSocket();
 	void sendMessage(std::string message) const;
 	std::string receiveMessage() const;
+	std::string getServername() const;
+	std::string getPort() const;
 
 };
 

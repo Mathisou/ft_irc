@@ -13,8 +13,8 @@ class Client{
 	std::string _user;
 	std::string _hostname;
 	std::string _real_name;
-	bool _is_connect;
-	bool _is_oper;
+	// bool _is_connect;
+	// bool _is_oper;
 
 	public:
 	Client(std::string nick, std::string user, std::string hostname, std::string real_name);
