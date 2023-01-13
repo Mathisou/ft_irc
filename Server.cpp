@@ -5,6 +5,8 @@
 Server::Server(const std::string &port, const std::string &password) : _port(port), _password(password), _server_name(){
 	this->_sockserver = newSocket();
 	this->_commandhandler.insert(std::make_pair("NICK", &nick));
+	this->_commandhandler.insert(std::make_pair("JOIN", &join));
+	this->_commandhandler.insert(std::make_pair("PRIVMSG", &privmsg));
 	// this->_commandhandler.insert(std::make_pair("PING", &ping));
 	// this->_commandhandler.insert(std::make_pair("PONG", &pong));
 	// this->_commandhandler.insert(std::make_pair("userhost", &user));
@@ -98,14 +100,14 @@ void Server::connectToServer()
 					if (pass.compare(this->_password) != 0)
 					{
 						is_pass_good = false;
-						sendMessage("WRONG PASSWORD");
+						sendMessage("WRONG PASSWORD", this->_sockcom);
 						break;
 					}
 					is_pass_good = true;
 				}
 				if ((ret.find("CAP LS") == std::string::npos && is_pass_good == false) || (ret.find("CAP LS") != std::string::npos && ret.find("NICK") != std::string::npos && is_pass_good == false))
 				{
-					sendMessage("PASS :Not enough parameters");
+					sendMessage("PASS :Not enough parameters", this->_sockcom);
 					break;
 				}
 				// split buffer to stock informations : std::string ret(split(buffer.c_str(), " "))
@@ -156,10 +158,10 @@ void Server::connectToServer()
 				this->_users.insert(std::make_pair(this->_sockcom, &new_user));
 				std::cout << "number of user connected to the server: " << this->_users.size() << std::endl;
 				// sendMessage("001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host);
-				sendMessage(send_rpl_err(this, new_user, 001));
-				sendMessage(send_rpl_err(this, new_user, 002));
-				sendMessage(send_rpl_err(this, new_user, 003));
-				sendMessage(send_rpl_err(this, new_user, 004));
+				sendMessage(send_rpl_err(this, new_user, 001), this->_sockcom);
+				sendMessage(send_rpl_err(this, new_user, 002), this->_sockcom);
+				sendMessage(send_rpl_err(this, new_user, 003), this->_sockcom);
+				sendMessage(send_rpl_err(this, new_user, 004), this->_sockcom);
 
 				//add new socket to array of sockets
 				for (int i = 0; i < max_clients; i++)
@@ -174,7 +176,7 @@ void Server::connectToServer()
 				}
 			}
 			else if (is_pass_good == true)
-				sendMessage("005 " + nick + " :Try server " + server_name + ", port 6667");
+				sendMessage("005 " + nick + " :Try server " + server_name + ", port 6667", this->_sockcom);
 		}
 		else
 		{
@@ -217,7 +219,7 @@ void Server::connectToServer()
 							command = command.substr(0, command.find(' '));
 							std::cout << "MY NICK: " << command << std::endl;
 							if (_commandhandler.find(command) != _commandhandler.end())
-								(_commandhandler[command])(this, buffer);
+								(_commandhandler[command])(this, buffer, sd);
 							break;
 						}
 					}
@@ -228,10 +230,10 @@ void Server::connectToServer()
 	close(this->_sockserver);
 }
 
-void Server::sendMessage(std::string message) const
+void Server::sendMessage(std::string message, int sd) const
 {
 	message += "\r\n";
-	if (send(this->_sockcom, message.c_str(), message.length(), 0) < 0)
+	if (send(sd, message.c_str(), message.length(), 0) < 0)
 		throw std::runtime_error("Error sending message.");
 }
 
@@ -259,4 +261,14 @@ std::string Server::getServername() const
 std::string Server::getPort() const
 {
 	return this->_port;
+}
+
+std::map<std::string, Channel *> Server::getChannels() const
+{
+	return this->_channels;
+}
+
+std::map<int, Client *> Server::getUsers() const
+{
+	return this->_users;
 }

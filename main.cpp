@@ -3,6 +3,7 @@
 #include "Command.hpp"
 #include "RPL_ERR.hpp"
 #include "utils.hpp"
+#include "Channel.hpp"
 
 int main(int ac, char **av)
 {
