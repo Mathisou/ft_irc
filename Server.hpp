@@ -52,8 +52,8 @@ class Server{
 	void connectToServer();
 	int newSocket();
 	void sendMessage(std::string message, int sd) const;
-	std::map<std::string, Channel *> getChannels() const;
-	std::map<int, Client*> getUsers() const;
+	std::map<std::string, Channel *> & getChannels();
+	std::map<int, Client*> & getUsers() ;
 	std::string receiveMessage() const;
 	std::string getServername() const;
 	std::string getPort() const;
