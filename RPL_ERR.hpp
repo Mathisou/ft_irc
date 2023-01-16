@@ -2,11 +2,11 @@
 # define RPL_ERR_HPP
 
 #include "Server.hpp"
-#include "Client.hpp"
+#include "User.hpp"
 
 class Server;
 
-std::string send_rpl_err(Server *serv, Client user, int code);
+std::string send_rpl_err(Server *serv, User user, int code);
 
 //RPL
 

@@ -1,5 +1,5 @@
 SRCS =	main.cpp\
-		Client.cpp\
+		User.cpp\
 		Command.cpp\
 		Server.cpp\
 		send_rpl_err.cpp\
@@ -7,7 +7,7 @@ SRCS =	main.cpp\
 
 OBJS =	${SRCS:.cpp=.o}
 
-INCLUDES =	Client.hpp\
+INCLUDES =	User.hpp\
 			Command.hpp\
 			Server.hpp\
 			RPL_ERR.hpp\
@@ -15,7 +15,7 @@ INCLUDES =	Client.hpp\
 
 CC =	c++
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -static-libasan -g3 -std=c++98 -I includes
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -static-libsan -g3 -std=c++98 -I includes
 
 NAME =	server
 
