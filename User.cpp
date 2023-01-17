@@ -59,19 +59,8 @@ void User::add_channel(std::string channel_name)
         this->_channels.push_back(channel_name);
 }
 
+void User::setNick(std::string new_nick)
+{
+    this->_nick = new_nick;
+}
 
-// bool User::getIs_oper() const
-// {
-//     return this->_is_oper;
-// }
-
-// std::ostream	&operator<<(std::ostream &stdout, User const &user)
-// {
-//     int i = 0;
-//     std::vector<std::string> channels = user.getChannels();
-//     for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); it++, i++)
-//     {
-//         stdout << "Channel " << i << "of User " << user.getNick() << " is called " << *it;
-//     }
-//     return (stdout);
-// }

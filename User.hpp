@@ -30,11 +30,9 @@ class User{
 	std::string getReal_name() const;
 	std::vector<std::string> getChannels() const;
 	void add_channel(std::string channel_name);
+	void setNick(std::string new_nick);
 	// bool getIs_oper() const;
 
 };
-
-// std::ostream	&operator<<(std::ostream &stdout, User const &user);
-
 
 #endif

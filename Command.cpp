@@ -4,10 +4,14 @@
 
 void nick(Server *serv, char *buffer, int sd)
 {
-    (void)serv;
-    (void) buffer;
-    (void)sd;
-    std::cout << "test1" << std::endl;
+    int i = 0;
+    std::string buf(buffer);
+    for (; buf[5 + i] && buf[5 + i] != ' ' && buf[5 + i] != '\r' && buf[5 + i] != '\n';i++);
+    std::string new_nickname(buf.substr(5, i));
+    std::string answer = serv->getUsers().find(sd)->second->getNick();
+    serv->getUsers().find(sd)->second->setNick(new_nickname);
+    answer += 
+    send()
 }
 
 void join(Server *serv, char *buffer, int sd)
@@ -22,13 +26,14 @@ void join(Server *serv, char *buffer, int sd)
     	serv->setChannels(channel_name, chan);
 	}
 	//On ajoute le client a notre serveur
-    std::cout << serv->getChannels() << std::endl;
+    // std::cout << serv->getChannels() << std::endl;
 	serv->getChannels().find(channel_name)->second->addUser(sd, serv->getUsers().find(sd)->second);
-    if (serv.getChannels().find(channel_name)->second->getUsersnumber() == 0)
+    if (serv->getChannels().find(channel_name)->second->getUsersnumber() == 0)
         serv->getChannels().find(channel_name)->second->addOper(sd, serv->getUsers().find(sd)->second);
     serv->getUsers().find(sd)->second->add_channel(channel_name);
-    std::cout << serv->getUsers() << std::endl;
-    std::cout << serv->getChannels().find(channel_name)->second->getUsers() << std::endl;
+    serv->sendMessage(send_rpl_err(serv, serv->getUsers().find(sd)->second, ))
+    // std::cout << serv->getUsers() << std::endl;
+    // std::cout << serv->getChannels().find(channel_name)->second->getUsers() << std::endl;
 }
 
 void privmsg(Server *serv, char *buffer, int sd)
