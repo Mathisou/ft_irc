@@ -1,4 +1,5 @@
 SRCS =	main.cpp\
+		cmds/cmd_join.cpp\
 		cmds/cmd_nick.cpp\
 		Channel.cpp\
 		Command.cpp\
