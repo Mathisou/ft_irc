@@ -1,7 +1,4 @@
-#include "User.hpp"
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
+#include "main.hpp"
 
 int max_clients = 10;
 

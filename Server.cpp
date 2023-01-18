@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "main.hpp"
 
 #define max_clients 10
 
@@ -46,7 +46,7 @@ void Server::new_connection(void)
 		exit(EXIT_FAILURE);
 	}
 	//inform user of socket number - used in send and receive commands
-	std::cout << "New connection , socket fd is" << this->_sockcom << " , ip is : " << inet_ntoa(server.sin_addr) << " , port : " <<  ntohs(server.sin_port) << std::endl;
+	std::cout << "New connection , socket fd is " << this->_sockcom << " , ip is : " << inet_ntoa(server.sin_addr) << " , port : " <<  ntohs(server.sin_port) << std::endl;
 	std::string ret;
 	//send new connection greeting message
 	size_t occ;
@@ -187,7 +187,6 @@ void Server::connectToServer()
 								if (it->first == sd)
 								{
 									// pour chaque channel dans user effacer ce user dans le channel;
-									std::cout << *(it->second) << std::endl;
 									std::vector<std::string> channel_of_user = it->second->getChannels();
 									for (std::vector<std::string>::iterator itt = channel_of_user.begin(); itt != channel_of_user.end(); itt++)
 									{
@@ -210,7 +209,7 @@ void Server::connectToServer()
 						{
 							std::string command(buffer);
 							command = command.substr(0, command.find(' '));
-							std::cout << "MY NICK: " << command << std::endl;
+							// std::cout << "MY NICK: " << command << std::endl;
 							if (_commandhandler.find(command) != _commandhandler.end())
 								(_commandhandler[command])(this, buffer, sd);
 							break;
@@ -223,13 +222,6 @@ void Server::connectToServer()
 	close(this->_sockserver);
 }
 
-void Server::sendMessage(std::string message, int sd) const
-{
-	message += "\r\n";
-	if (send(sd, message.c_str(), message.length(), 0) < 0)
-		throw std::runtime_error("Error sending message.");
-}
-
 std::string Server::receiveMessage() const
 {
 	char buffer[1024];
@@ -239,7 +231,7 @@ std::string Server::receiveMessage() const
 		std::cout << strerror(errno) << std::endl;
 		throw std::runtime_error("Error receiving message");
 	}
-	std::cout << "BUFFER : " << buffer << "]\n";
+	// std::cout << "BUFFER : " << buffer << "]\n";
 	message = buffer;
 	return message;
 }

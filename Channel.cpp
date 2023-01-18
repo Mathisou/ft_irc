@@ -1,4 +1,4 @@
-#include "Channel.hpp"
+#include "main.hpp"
 
 Channel::Channel(std::string channel_name) : _channel_name(channel_name), _topic(){
 }
@@ -55,6 +55,11 @@ std::string Channel::getChannelname() const
 std::map<int, User*> & Channel::getUsers()
 {
     return this->_users;
+}
+
+std::map<int, User*> & Channel::getOpers()
+{
+    return this->_opers;
 }
 
 void Channel::addUser(int sd, User *user)

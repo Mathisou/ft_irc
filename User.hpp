@@ -1,13 +1,7 @@
 #ifndef USER_HPP
 # define USER_HPP
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <vector>
-#include <algorithm>
+#include "main.hpp"
 
 class User{
 	private:

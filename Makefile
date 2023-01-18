@@ -1,18 +1,22 @@
 SRCS =	main.cpp\
-		User.cpp\
-		Command.cpp\
-		Server.cpp\
-		send_rpl_err.cpp\
+		cmds/cmd_nick.cpp\
 		Channel.cpp\
-		utils.cpp
+		Command.cpp\
+		send_rpl_err.cpp\
+		send.cpp\
+		Server.cpp\
+		User.cpp\
+		utils.cpp\
 
 OBJS =	${SRCS:.cpp=.o}
 
-INCLUDES =	User.hpp\
+INCLUDES =	Channel.hpp\
 			Command.hpp\
-			Server.hpp\
 			RPL_ERR.hpp\
-			Channel.hpp
+			Server.hpp\
+			User.hpp\
+			utils.hpp\
+			main.hpp\
 
 CC =	c++
 

@@ -1,10 +1,7 @@
 #ifndef RPL_ERR_HPP
 # define RPL_ERR_HPP
 
-#include "Server.hpp"
-#include "User.hpp"
-
-class Server;
+#include "main.hpp"
 
 std::string send_rpl_err(int code, Server *serv, User *user, std::string args, std::string args2);
 
@@ -68,11 +65,11 @@ std::string send_rpl_err(int code, Server *serv, User *user, std::string args, s
 
 //353
 # define RPL_NAMREPLY(channel, list_of_users) \
-    (" = " + channel + " :" + list_of_users)
+    ("= " + channel + " :" + list_of_users)
 
 //366
 # define RPL_ENDOFNAMES(channel) \
-    (channel + "< :End of NAMES list")
+    (channel + " :End of NAMES list")
 
 //367
 # define RPL_BANLIST(channel) \
@@ -169,8 +166,8 @@ std::string send_rpl_err(int code, Server *serv, User *user, std::string args, s
     (":You have not registered")
 
 //461
-# define ERR_NEEDMOREPARAMS \
-    ("<command> :Not enough parameters")
+# define ERR_NEEDMOREPARAMS(command) \
+    (command + " :Not enough parameters")
 
 //462
 # define ERR_ALREADYREGISTRED \

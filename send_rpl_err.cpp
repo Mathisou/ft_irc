@@ -1,28 +1,15 @@
-#include "RPL_ERR.hpp"
-
-std::string putnbr(int nb, std::string codestr)
-{
-    int i = 0;
-    if (nb < 10)
-        codestr += nb + 48;
-    while (nb / 10 >= 10)
-    {
-        codestr[i] = (nb % 10) + 48;
-        i++;
-        nb = nb / 10;
-    }
-    return (codestr);
-}
+#include "main.hpp"
 
 std::string send_rpl_err(int code, Server *serv, User *user, std::string args, std::string args2)
 {
-    std::string codestr;
-    codestr = putnbr(code, codestr);
+    std::stringstream ss;
+    ss << code;
+    std::string codestr = ss.str();
     if (code < 10)
         codestr.insert(0, 2, '0');
     else if (code < 100)
         codestr.insert(0, 1, '0');
-    std::cout << codestr << std::endl;
+
     std::string ret(":" + serv->getServername() + " " + codestr + " " + user->getNickname() + " ");
 
     switch (code)
@@ -126,9 +113,9 @@ std::string send_rpl_err(int code, Server *serv, User *user, std::string args, s
         // case 431:
         //     ret += ERR_NONICKNAMEGIVEN;
 		// 	break;
-        // case 432:
-        //     ret += ERR_ERRONEUSNICKNAME(user->getNickname());
-		// 	break;
+        case 432:
+            ret += ERR_ERRONEUSNICKNAME(args);
+			break;
         // case 433:
         //     ret += ERR_NICKNAMEINUSE(user->getNickname());
 		// 	break;
@@ -144,9 +131,9 @@ std::string send_rpl_err(int code, Server *serv, User *user, std::string args, s
         // case 451:
         //     ret += ERR_NOTREGISTERED;
 		// 	break;
-        // case 461:
-        //     ret += ERR_NEEDMOREPARAMS;
-		// 	break;
+        case 461:
+            ret += ERR_NEEDMOREPARAMS(args);
+			break;
         // case 462:
         //     ret += ERR_ALREADYREGISTRED;
 		// 	break;

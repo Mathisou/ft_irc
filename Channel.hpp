@@ -1,7 +1,9 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-#include "Server.hpp"
+#include "main.hpp"
+
+class User;
 
 class Channel
 {
@@ -22,6 +24,7 @@ class Channel
     Channel &operator=(const Channel &T);
     ~Channel();
     std::map<int, User*> & getUsers();
+    std::map<int, User*> & getOpers();
     std::string getTopic() const;
     std::string getChannelname() const;
     int getUsersnumber() const;// if numberofuser == 0 map.erase channel
