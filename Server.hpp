@@ -21,7 +21,6 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 #include "RPL_ERR.hpp"
-#include "utils.hpp"
 
 # define SERVER_NAME "localhost"
 # define ver "1.0"

@@ -36,7 +36,7 @@ Channel::~Channel(){}
 
 int Channel::getUsersnumber() const
 {
-    return this->_users.size();
+    return (this->_users.size() + this->_opers.size());
 }
 
 std::string Channel::getTopic() const
@@ -71,9 +71,27 @@ void Channel::leftUser(int sd)
 {
     std::map<int, User*>::iterator it;
     if ((it = this->_users.find(sd)) != this->_users.end())
-    {
         this->_users.erase(it);
-        if ((it = this->_opers.find(sd)) != this->_opers.end())
-            this->_opers.erase(it);
-    }
+    else if ((it = this->_opers.find(sd)) != this->_opers.end())
+        this->_opers.erase(it);
 }
+
+std::string Channel::get_list_of_user_in_chan()
+{
+    std::string output;
+    for (std::map<int, User *>::iterator it = this->_opers.begin(); it != this->_opers.end(); it++)
+    {
+        if (!output.empty())
+            output += " ";
+        output += "@";
+        output += it->second->getNickname();
+    }
+    for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); it++)
+    {
+        if (!output.empty())
+            output += " ";
+        output += it->second->getNickname();
+    }
+    return (output);
+}
+

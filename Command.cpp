@@ -1,6 +1,9 @@
 #include "Command.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
+#include "RPL_ERR.hpp"
 
+std::string user_output(User *user);
 
 void nick(Server *serv, char *buffer, int sd)
 {
@@ -8,10 +11,11 @@ void nick(Server *serv, char *buffer, int sd)
     std::string buf(buffer);
     for (; buf[5 + i] && buf[5 + i] != ' ' && buf[5 + i] != '\r' && buf[5 + i] != '\n';i++);
     std::string new_nickname(buf.substr(5, i));
-    std::string answer = serv->getUsers().find(sd)->second->getNick();
+    std::string user_answer = user_output(serv->getUsers().find(sd)->second);
+    user_answer += buffer;
+    std::cout << user_answer << std::endl;
+    serv->sendMessage(user_answer, sd);
     serv->getUsers().find(sd)->second->setNick(new_nickname);
-    answer += 
-    send()
 }
 
 void join(Server *serv, char *buffer, int sd)
@@ -27,11 +31,20 @@ void join(Server *serv, char *buffer, int sd)
 	}
 	//On ajoute le client a notre serveur
     // std::cout << serv->getChannels() << std::endl;
-	serv->getChannels().find(channel_name)->second->addUser(sd, serv->getUsers().find(sd)->second);
     if (serv->getChannels().find(channel_name)->second->getUsersnumber() == 0)
         serv->getChannels().find(channel_name)->second->addOper(sd, serv->getUsers().find(sd)->second);
+    else
+	    serv->getChannels().find(channel_name)->second->addUser(sd, serv->getUsers().find(sd)->second);
     serv->getUsers().find(sd)->second->add_channel(channel_name);
-    serv->sendMessage(send_rpl_err(serv, serv->getUsers().find(sd)->second, ))
+    std::string user_answer = user_output(serv->getUsers().find(sd)->second);
+    user_answer += buffer;
+    serv->sendMessage(user_answer, sd);
+    serv->sendMessage(send_rpl_err(332, serv, serv->getUsers().find(sd)->second, channel_name, ""), sd);
+    std::string list_of_user = serv->getChannels().find(channel_name)->second->get_list_of_user_in_chan();
+    std::cout << list_of_user << std::endl;
+    serv->sendMessage(send_rpl_err(353, serv, serv->getUsers().find(sd)->second, channel_name, list_of_user), sd);
+    serv->sendMessage(send_rpl_err(366, serv, serv->getUsers().find(sd)->second, channel_name, ""), sd);
+    // serv->sendMessage(send_rpl_err(serv, serv->getUsers().find(sd)->second, ))
     // std::cout << serv->getUsers() << std::endl;
     // std::cout << serv->getChannels().find(channel_name)->second->getUsers() << std::endl;
 }

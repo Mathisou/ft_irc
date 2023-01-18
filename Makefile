@@ -3,7 +3,8 @@ SRCS =	main.cpp\
 		Command.cpp\
 		Server.cpp\
 		send_rpl_err.cpp\
-		Channel.cpp
+		Channel.cpp\
+		utils.cpp
 
 OBJS =	${SRCS:.cpp=.o}
 

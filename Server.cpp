@@ -105,10 +105,10 @@ void Server::new_connection(void)
 		this->setUsers(this->_sockcom, new_user);
 		std::cout << "number of user connected to the server: " << this->_users.size() << std::endl;
 		// sendMessage("001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host);
-		sendMessage(send_rpl_err(this, *new_user, 001), this->_sockcom);
-		sendMessage(send_rpl_err(this, *new_user, 002), this->_sockcom);
-		sendMessage(send_rpl_err(this, *new_user, 003), this->_sockcom);
-		sendMessage(send_rpl_err(this, *new_user, 004), this->_sockcom);
+		sendMessage(send_rpl_err(001, this, new_user, "", ""), this->_sockcom);
+		sendMessage(send_rpl_err(002, this, new_user, "", ""), this->_sockcom);
+		sendMessage(send_rpl_err(003, this, new_user, "", ""), this->_sockcom);
+		sendMessage(send_rpl_err(004, this, new_user, "", ""), this->_sockcom);
 		//add new socket to array of sockets
 		for (int i = 0; i < max_clients; i++)
 		{
@@ -122,7 +122,7 @@ void Server::new_connection(void)
 		}
 	}
 	else if (is_pass_good == true)
-		sendMessage("005 " + nick + " :Try server " + server_name + ", port 6667", this->_sockcom);
+		sendMessage(send_rpl_err(005, this, NULL, "", ""), this->_sockcom);
 }
 
 void Server::connectToServer()
@@ -196,6 +196,7 @@ void Server::connectToServer()
 											this->_channels.erase(*itt);
 									}
 									this->_users.erase(it);
+									// delete it->second;
 									break;
 								}
 							}
@@ -288,7 +289,7 @@ std::ostream	&operator<<(std::ostream &stdout, std::map<int, User*> &users)
 	int i = 0;
 	for (std::map<int, User*>::iterator it = users.begin(); it != users.end(); it++, i++)
 	{
-		stdout << "User " << i << " nick is " << it->second->getNick() << "." << std::endl;
+		stdout << "User " << i << " nick is " << it->second->getNickname() << "." << std::endl;
 	}
 	return (stdout);
 }
@@ -299,7 +300,7 @@ std::ostream	&operator<<(std::ostream &stdout, User const &user)
     std::vector<std::string> channels = user.getChannels();
     for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); it++, i++)
     {
-        stdout << "Channel " << i << " of User " << user.getNick() << " is called " << *it << std::endl;
+        stdout << "Channel " << i << " of User " << user.getNickname() << " is called " << *it << std::endl;
     }
     return (stdout);
 }
