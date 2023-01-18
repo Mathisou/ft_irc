@@ -20,7 +20,7 @@ INCLUDES =	Channel.hpp\
 
 CC =	c++
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -static-libsan -g3 -std=c++98 -I includes
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -static-libasan -g3 -std=c++98 -I includes
 
 NAME =	server
 
