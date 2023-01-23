@@ -48,6 +48,7 @@
         "typeinfo": "cpp",
         "cstdarg": "cpp",
         "numeric": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "set": "cpp"
     }
 }

@@ -2,8 +2,10 @@ SRCS =	main.cpp\
 		cmds/cmd_join.cpp\
 		cmds/cmd_nick.cpp\
 		cmds/cmd_privmsg.cpp\
+		cmds/cmd_pingpong.cpp\
+		cmds/cmd_part.cpp\
+		cmds/cmd_topic.cpp\
 		Channel.cpp\
-		Command.cpp\
 		send_rpl_err.cpp\
 		send.cpp\
 		Server.cpp\
