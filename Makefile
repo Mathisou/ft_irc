@@ -1,5 +1,6 @@
 SRCS =	main.cpp\
 		cmds/cmd_join.cpp\
+		cmds/cmd_kick.cpp\
 		cmds/cmd_nick.cpp\
 		cmds/cmd_privmsg.cpp\
 		cmds/cmd_pingpong.cpp\
