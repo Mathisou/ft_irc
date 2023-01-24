@@ -26,6 +26,9 @@ class User;
 # define SERVER_NAME "localhost"
 # define ver "1.0"
 
+# define FIND_USER(sd) \
+    serv->getUsers().find(sd)->second
+
 class Server;
 class User;
 class Channel;
