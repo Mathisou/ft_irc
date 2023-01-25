@@ -1,27 +1,27 @@
-SRCS =	main.cpp\
-		cmds/cmd_join.cpp\
-		cmds/cmd_kick.cpp\
-		cmds/cmd_nick.cpp\
-		cmds/cmd_privmsg.cpp\
-		cmds/cmd_pingpong.cpp\
-		cmds/cmd_part.cpp\
-		cmds/cmd_topic.cpp\
-		Channel.cpp\
-		send_rpl_err.cpp\
-		send.cpp\
-		Server.cpp\
-		User.cpp\
-		utils.cpp\
+SRCS =	srcs/main.cpp\
+		srcs/cmds/cmd_join.cpp\
+		srcs/cmds/cmd_kick.cpp\
+		srcs/cmds/cmd_nick.cpp\
+		srcs/cmds/cmd_privmsg.cpp\
+		srcs/cmds/cmd_pingpong.cpp\
+		srcs/cmds/cmd_part.cpp\
+		srcs/cmds/cmd_topic.cpp\
+		srcs/Channel.cpp\
+		srcs/send_rpl_err.cpp\
+		srcs/send.cpp\
+		srcs/Server.cpp\
+		srcs/User.cpp\
+		srcs/utils.cpp\
 
 OBJS =	${SRCS:.cpp=.o}
 
-INCLUDES =	Channel.hpp\
-			Command.hpp\
-			RPL_ERR.hpp\
-			Server.hpp\
-			User.hpp\
-			utils.hpp\
-			main.hpp\
+INCLUDES =	includes/Channel.hpp\
+			includes/Command.hpp\
+			includes/RPL_ERR.hpp\
+			includes/Server.hpp\
+			includes/User.hpp\
+			includes/utils.hpp\
+			includes/main.hpp\
 
 CC =	c++
 

@@ -17,7 +17,6 @@
 #include <errno.h>
 
 #include "User.hpp"
-class User;
 #include "Command.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
@@ -28,6 +27,9 @@ class User;
 
 # define FIND_USER(sd) \
     serv->getUsers().find(sd)->second
+
+# define FIND_CHANNEL(channel_name) \
+    serv->getChannels().find(channel_name)->second
 
 class Server;
 class User;

@@ -1,4 +1,4 @@
-#include "../main.hpp"
+#include "main.hpp"
 
 void ping(Server *serv, char *buffer, int sd)
 {

@@ -1,4 +1,4 @@
-#include "../main.hpp"
+#include "main.hpp"
 
 void oper(Server *serv, char *buffer, int sd)
 {
