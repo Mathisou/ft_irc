@@ -6,6 +6,7 @@ SRCS =	srcs/main.cpp\
 		srcs/cmds/cmd_pingpong.cpp\
 		srcs/cmds/cmd_part.cpp\
 		srcs/cmds/cmd_topic.cpp\
+		srcs/cmds/cmd_mode.cpp\
 		srcs/Channel.cpp\
 		srcs/send_rpl_err.cpp\
 		srcs/send.cpp\
