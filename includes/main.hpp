@@ -25,7 +25,7 @@
 # define SERVER_NAME "localhost"
 # define ver "1.0"
 # define USER_MODE "iwoOr"
-# define CHANNEL_MODE "OovaimnptlkbeI"
+# define CHANNEL_MODE "ovaimnptlkbeI"
 
 # define FIND_USER(sd) \
     serv->getUsers().find(sd)->second
