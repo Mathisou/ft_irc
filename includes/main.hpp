@@ -34,12 +34,15 @@
 # define FIND_CHANNEL(channel_name) \
     serv->getChannels().find(channel_name)->second
 
+#define max_clients 10
+
 class Server;
 class User;
 class Channel;
 
 std::string user_output(User *user);
 std::string anonymous_output();
+void disconnectUser(Server *serv, int sd);
 void sendMessage(std::string message, int sd);
 void sendEveryone(std::string message, Channel *chan);
 void sendEveryone(std::string message, Channel *chan, int sd);

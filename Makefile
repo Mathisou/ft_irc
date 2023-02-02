@@ -8,6 +8,7 @@ SRCS =	srcs/main.cpp\
 		srcs/cmds/cmd_topic.cpp\
 		srcs/cmds/cmd_mode.cpp\
 		srcs/cmds/cmd_oper.cpp\
+		srcs/cmds/cmd_kill.cpp\
 		srcs/Channel.cpp\
 		srcs/send_rpl_err.cpp\
 		srcs/send.cpp\
@@ -27,7 +28,7 @@ INCLUDES =	includes/Channel.hpp\
 
 CC =	c++
 
-CFLAGS = -Wall -Wextra -Werror	-fsanitize=address -g3 -std=c++98 -I includes
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I includes
 
 NAME =	server
 
