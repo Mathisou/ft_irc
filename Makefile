@@ -9,12 +9,12 @@ SRCS =	srcs/main.cpp\
 		srcs/cmds/cmd_mode.cpp\
 		srcs/cmds/cmd_oper.cpp\
 		srcs/cmds/cmd_kill.cpp\
+		srcs/cmds/cmd_quit.cpp\
 		srcs/Channel.cpp\
 		srcs/send_rpl_err.cpp\
 		srcs/send.cpp\
 		srcs/Server.cpp\
 		srcs/User.cpp\
-		srcs/utils.cpp\
 
 OBJS =	${SRCS:.cpp=.o}
 
@@ -23,7 +23,6 @@ INCLUDES =	includes/Channel.hpp\
 			includes/RPL_ERR.hpp\
 			includes/Server.hpp\
 			includes/User.hpp\
-			includes/utils.hpp\
 			includes/main.hpp\
 
 CC =	c++
