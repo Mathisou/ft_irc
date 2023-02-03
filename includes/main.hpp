@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <csignal>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
