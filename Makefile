@@ -10,6 +10,7 @@ SRCS =	srcs/main.cpp\
 		srcs/cmds/cmd_oper.cpp\
 		srcs/cmds/cmd_kill.cpp\
 		srcs/cmds/cmd_quit.cpp\
+		srcs/cmds/cmd_restart.cpp\
 		srcs/Channel.cpp\
 		srcs/send_rpl_err.cpp\
 		srcs/send.cpp\
