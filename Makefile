@@ -28,7 +28,7 @@ INCLUDES =	includes/Channel.hpp\
 
 CC =	c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -I includes
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -I includes
 
 NAME =	server
 
