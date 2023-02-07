@@ -1,5 +1,12 @@
 #include "main.hpp"
 
+bool isBotCmd(std::string buffer)
+{
+    int i = 0;
+    for (int j = 0;buffer[i] && i < 2;j++)
+        if ()
+}
+
 void privmsg(Server *serv, std::string buffer, int sd)
 {
     int i = 0;
@@ -27,7 +34,11 @@ void privmsg(Server *serv, std::string buffer, int sd)
             sendMessage(send_rpl_err(404, serv, FIND_USER(sd), msgtarget, ""), sd);
 		else if (FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getNickname()) == true || FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getUsername()) == true || FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getHostname()) == true)
             sendMessage(send_rpl_err(404, serv, FIND_USER(sd), msgtarget, ""), sd);
-        if ((FIND_CHANNEL(msgtarget)->getMode().find("a") != std::string::npos))
+        else if (FIND_USER(sd)->getMode().find('o') != std::string::npos && isBotCmd(buffer) == true)
+        {
+            
+        }
+        else if ((FIND_CHANNEL(msgtarget)->getMode().find("a") != std::string::npos))
         {
             user_answer = anonymousOutput() + buffer;
             sendEveryoneInChanExceptUser(user_answer, FIND_CHANNEL(msgtarget), sd);
