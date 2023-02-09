@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-Channel::Channel(std::string channelName) : _channelName(channelName), _topic("") {
+Channel::Channel(std::string channelName) : _channelName(channelName), _topic(""), _botInchan(false) {
 }
 
 Channel::~Channel()
@@ -60,6 +60,10 @@ int Channel::getMaxUser() const
 {
     return this->_maxUser;
 }
+bool Channel::getBot() const
+{
+    return this->_botInchan;
+}
 
 void Channel::setTopic(std::string topic)
 {
@@ -79,6 +83,11 @@ void Channel::setKey(std::string key)
 void Channel::setMaxUser(int maxUser)
 {
     this->_maxUser = maxUser;
+}
+
+void Channel::setBot()
+{
+    this->_botInchan = !this->_botInchan;
 }
 
 void Channel::addUser(int sd, User *user)

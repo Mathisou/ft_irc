@@ -45,3 +45,8 @@ std::string anonymousOutput()
 {
     return (":anonymous!anonymous@anonymous ");
 }
+
+std::string botOutput(std::string name)
+{
+    return (name + " ");
+}

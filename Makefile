@@ -16,6 +16,7 @@ SRCS =	srcs/main.cpp\
 		srcs/send.cpp\
 		srcs/Server.cpp\
 		srcs/User.cpp\
+		bot/srcs/IRCbot.cpp\
 
 OBJS =	${SRCS:.cpp=.o}
 
@@ -25,6 +26,7 @@ INCLUDES =	includes/Channel.hpp\
 			includes/Server.hpp\
 			includes/User.hpp\
 			includes/main.hpp\
+			bot/includes/IRCbot.hpp\
 
 CC =	c++
 

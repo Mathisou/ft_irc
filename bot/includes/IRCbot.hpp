@@ -1,15 +1,16 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <set>
-#include <cstdlib>
+#include "../../includes/main.hpp"
+
+class Server;
+class Channel;
 
 class IRCbot
 {
-	private:
+	typedef void (*command)(Server *, Channel *, int);
 
+	private:
+		std::map<std::string, command> _commandhandler;
 		std::string _name;
 		std::set<std::string> _channels;
 
@@ -17,8 +18,11 @@ class IRCbot
 
 		IRCbot();
 		virtual ~IRCbot();
-		std::string & getName() const;
-		std::string makeJoke();
+		std::string getName() const;
 		void addChannel(std::string channelName);
-		
+		void findCmd(Server * serv, Channel *chan, int sd, std::string cmd);
 };
+
+void connect(Server *serv, Channel *chan, int sd);
+void quit(Server *serv, Channel *chan, int sd);
+void makeJoke(Server *serv, Channel *chan, int sd);

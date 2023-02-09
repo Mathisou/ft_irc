@@ -15,7 +15,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <cstdlib>
+#include <fstream>
 
+#include "../bot/includes/IRCbot.hpp"
 #include "User.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
@@ -48,9 +51,11 @@
 class Server;
 class User;
 class Channel;
+class IRCbot;
 
 std::string userOutput(User *user);
 std::string anonymousOutput();
+std::string botOutput(std::string name);
 void disconnectUser(Server *serv, int sd);
 void sendMessage(std::string message, int sd);
 void sendEveryoneInChan(std::string message, Channel *chan);

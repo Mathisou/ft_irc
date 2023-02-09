@@ -2,7 +2,6 @@
 
 #include "main.hpp"
 
-class User;
 
 class Server{
 	public:
@@ -21,6 +20,7 @@ class Server{
 		bool _isRestart;
 		int newSocket();
 		void newConnection(void);
+		IRCbot _bot;
 
 	public:
 		Server(const std::string &port, const std::string &password);
@@ -31,6 +31,7 @@ class Server{
 		std::string receiveMessage() const;
 		std::string getServerName() const;
 		std::string getPort() const;
+		IRCbot getBot() const;
 		struct sockaddr_in getServer();
 		void setChannels(std::string channel_name, Channel *chan);
 		void setUsers(int sd, User *user);
