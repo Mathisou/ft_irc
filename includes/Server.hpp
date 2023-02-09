@@ -33,7 +33,7 @@ class Server{
 		std::string getPort() const;
 		IRCbot getBot() const;
 		struct sockaddr_in getServer();
-		void setChannels(std::string channel_name, Channel *chan);
+		void setChannels(std::string channelName, Channel *chan);
 		void setUsers(int sd, User *user);
 		void setIsRestart();
 		int searchUserByNickname(std::string nickname);

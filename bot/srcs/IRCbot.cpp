@@ -33,7 +33,6 @@ void connect(Server *serv, Channel *chan, int sd)
     if (chan && chan->getBot() == false)
     {
         chan->setBot();
-        std::cout << "test" << std::endl;
         sendEveryoneInChan(":" + serv->getBot().getName() + " JOIN " + chan->getChannelName(), chan);
     }
 }
@@ -50,31 +49,35 @@ void quit(Server *serv, Channel *chan, int sd)
 
 void makeJoke(Server *serv, Channel *chan, int sd)
 {
-    (void)sd;
     int lines = 0;
-    std::string line;
-    std::ifstream file("bot/srcs/blagues.txt");
-    if (file.is_open())
+    if (chan && chan->getBot() == true)
     {
-        std::cout <<"mdr" << std::endl;
-        while (std::getline(file, line))
-            lines++;
-        file.close();
-        int random = rand() % lines;
+        std::string line;
         std::ifstream file("bot/srcs/blagues.txt");
-        std::cout << "PAS YO" << std::endl;
         if (file.is_open())
         {
-            std::cout << "YO" << std::endl;
-            for (int i = 0; i < lines; i++)
-            {
-                std::getline(file, line);
-                if (i == random)
-                    break;
-            }
+            while (std::getline(file, line))
+                lines++;
             file.close();
+            int random = rand() % lines;
+            std::ifstream file("bot/srcs/blagues.txt");
+            if (file.is_open())
+            {
+                for (int i = 0; i < lines; i++)
+                {
+                    std::getline(file, line);
+                    if (i == random)
+                        break;
+                }
+                file.close();
+            }
         }
+        sendEveryoneInChan(":" + serv->getBot().getName() + " PRIVMSG " + chan->getChannelName() + " :" + line, chan);
     }
-    sendEveryoneInChan(":" + serv->getBot().getName() + " PRIVMSG " + chan->getChannelName() + " :" + line, chan);
-    // return line;
+    else
+    {
+        std::string userAnswer = userOutput(FIND_USER(sd));
+        userAnswer += " PRIVMSG " + chan->getChannelName() + " :There is no bot in this channel.";
+        sendEveryoneInChan(userAnswer, chan);
+    }
 }
