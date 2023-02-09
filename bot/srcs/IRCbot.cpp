@@ -1,6 +1,6 @@
 #include "../../includes/main.hpp"
 
-IRCbot::IRCbot() : _name("Armendes the BOT")
+IRCbot::IRCbot() : _name("ArmendestheBOT")
 {
 	this->_commandhandler.insert(std::pair<std::string, command>("connect", &connect));
     this->_commandhandler.insert(std::pair<std::string, command>("joke", &makeJoke));
@@ -34,9 +34,7 @@ void connect(Server *serv, Channel *chan, int sd)
     {
         chan->setBot();
         std::cout << "test" << std::endl;
-        // std::string botAnswer = botOutput(serv->getBot().getName());
-        // botAnswer = serv->getBot().getName() + " JOIN " + chan->getChannelName();
-        sendEveryoneInChan(serv->getBot().getName() + "!bot@bot JOIN " + chan->getChannelName(), chan);
+        sendEveryoneInChan(":" + serv->getBot().getName() + " JOIN " + chan->getChannelName(), chan);
     }
 }
 
@@ -46,31 +44,37 @@ void quit(Server *serv, Channel *chan, int sd)
     if (chan && chan->getBot() == true)
     {
         chan->setBot();
-        // std::string botAnswer = botOutput(serv->getBot().getName());
-        // botAnswer += "PART " + chan->getChannelName();
-        sendEveryoneInChan(serv->getBot().getName() + "!bot@bot PART " + chan->getChannelName(), chan);
+        sendEveryoneInChan(":" + serv->getBot().getName() + " PART " + chan->getChannelName(), chan);
     }
 }
 
 void makeJoke(Server *serv, Channel *chan, int sd)
 {
-    (void)serv;
-    (void)chan;
     (void)sd;
-    int jokesCount = 0;
-    std::string infile("blagues.txt");
-    std::ifstream in(infile.c_str());
-    if (!in.is_open())
-        return ;
+    int lines = 0;
     std::string line;
-    for (;std::getline(in, line);jokesCount++)
-        ;
-    in.close();
-    in.open("blagues.txt", std::ifstream::in);
-    srand(time(NULL));
-    int random = rand() % jokesCount;
-    for (int j = 0;std::getline(in, line) && j < random; j++)
-        ;
-    in.close();
+    std::ifstream file("bot/srcs/blagues.txt");
+    if (file.is_open())
+    {
+        std::cout <<"mdr" << std::endl;
+        while (std::getline(file, line))
+            lines++;
+        file.close();
+        int random = rand() % lines;
+        std::ifstream file("bot/srcs/blagues.txt");
+        std::cout << "PAS YO" << std::endl;
+        if (file.is_open())
+        {
+            std::cout << "YO" << std::endl;
+            for (int i = 0; i < lines; i++)
+            {
+                std::getline(file, line);
+                if (i == random)
+                    break;
+            }
+            file.close();
+        }
+    }
+    sendEveryoneInChan(":" + serv->getBot().getName() + " PRIVMSG " + chan->getChannelName() + " :" + line, chan);
     // return line;
 }
