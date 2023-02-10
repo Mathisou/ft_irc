@@ -139,3 +139,13 @@ std::string sendRplErr(int code, Server *serv, User *user, std::string args, std
 //501
 #define ERR_UMODEUNKNOWNFLAG \
     (":Unknown MODE flag")
+
+//BOT ERR
+
+//667
+#define BOT_ERR_ALREADYCONNECT(channel) \
+    (channel + " :There is already a bot.")
+
+//668
+#define BOT_ERR_NOBOT(channel) \
+    (channel + " :There is no bot.")

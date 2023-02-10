@@ -117,6 +117,12 @@ std::string sendRplErr(int code, Server *serv, User *user, std::string args, std
         case 501:
             ret += ERR_UMODEUNKNOWNFLAG;
 			break;
+        case 667:
+            ret += BOT_ERR_ALREADYCONNECT(args);
+            break;
+        case 668:
+            ret += BOT_ERR_NOBOT(args);
+            break;
 		default:
 			;
     }

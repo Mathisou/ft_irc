@@ -39,7 +39,7 @@ void privmsg(Server *serv, std::string buffer, int sd)
             sendMessage(sendRplErr(404, serv, FIND_USER(sd), msgtarget, ""), sd);
 		else if (FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getNickname()) == true || FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getUsername()) == true || FIND_CHANNEL(msgtarget)->isBan(FIND_USER(sd)->getHostname()) == true)
             sendMessage(sendRplErr(404, serv, FIND_USER(sd), msgtarget, ""), sd);
-        else if (FIND_USER(sd)->getMode().find('o') != std::string::npos && isBotCmd(buffer) == true)
+        else if (isBotCmd(buffer) == true)
         {
             std::string command = buffer.substr(buffer.find('!') + 1, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - (buffer.find('!') + 1) : buffer.length() - 1 - (buffer.find('!') + 1));
             serv->getBot().findCmd(serv, FIND_CHANNEL(msgtarget), sd, command);

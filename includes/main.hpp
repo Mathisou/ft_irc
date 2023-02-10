@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <cstdlib>
 #include <fstream>
+#include <ctime>
 
 #include "../bot/includes/IRCbot.hpp"
 #include "User.hpp"
@@ -43,7 +44,7 @@
 #define CHECKCHANNELMODE(channelName, mode) \
     FIND_CHANNEL(channelName)->getMode().find(mode) == std::string::npos ? true : false
 
-#define maxClients 1024
+#define maxClients 10
 
 #define endBuf std::string("\r\n")
 #define sep std::string(" \r\n")
@@ -63,3 +64,4 @@ void sendEveryoneInChanExceptUser(std::string message, Channel *chan, int sd);
 void sendEveryone(std::string message, std::map<int, User *> users);
 bool nicknameIsInUse(Server *serv, std::string nick);
 bool nicknameIsValid(std::string nick);
+time_t	getTime(void);

@@ -17,6 +17,7 @@ class Channel
         int _maxUser;
         bool _botInchan;
         std::map<std::string, std::string> _banList;
+        time_t _lastJoke;
 
     public:
         Channel(std::string channelName);
@@ -32,11 +33,13 @@ class Channel
         std::string getKey() const;
         int getMaxUser() const;
         bool getBot() const;
+        time_t getLastJoke() const;
         void setTopic(std::string topic);
         void setMode(std::string mode);
         void setKey(std::string key);
         void setMaxUser(int maxUser);
         void setBot();
+        void setLastJoke();
         void addUser(int sd, User *user);
         void addChanops(int sd, User *user);
         void addVoices(int sd, User *user);

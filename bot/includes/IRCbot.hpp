@@ -21,8 +21,10 @@ class IRCbot
 		std::string getName() const;
 		void addChannel(std::string channelName);
 		void findCmd(Server * serv, Channel *chan, int sd, std::string cmd);
+		
 };
 
 void connect(Server *serv, Channel *chan, int sd);
 void quit(Server *serv, Channel *chan, int sd);
 void makeJoke(Server *serv, Channel *chan, int sd);
+void giveTime(Server *serv, Channel *chan, int sd);

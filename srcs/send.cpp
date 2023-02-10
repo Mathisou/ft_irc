@@ -46,7 +46,7 @@ std::string anonymousOutput()
     return (":anonymous!anonymous@anonymous ");
 }
 
-std::string botOutput(std::string name)
+time_t	getTime(void)
 {
-    return (name + " ");
+	return time(NULL);
 }
