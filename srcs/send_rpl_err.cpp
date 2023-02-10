@@ -123,6 +123,9 @@ std::string sendRplErr(int code, Server *serv, User *user, std::string args, std
         case 668:
             ret += BOT_ERR_NOBOT(args);
             break;
+        case 669:
+            ret += BOT_NOCOMMAMD(args);
+            break;
 		default:
 			;
     }

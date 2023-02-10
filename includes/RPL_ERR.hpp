@@ -149,3 +149,8 @@ std::string sendRplErr(int code, Server *serv, User *user, std::string args, std
 //668
 #define BOT_ERR_NOBOT(channel) \
     (channel + " :There is no bot.")
+
+//669
+#define BOT_NOCOMMAMD(cmd) \
+    (cmd + " :No such command.")
+    

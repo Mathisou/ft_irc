@@ -42,7 +42,7 @@ void privmsg(Server *serv, std::string buffer, int sd)
         else if (isBotCmd(buffer) == true)
         {
             std::string command = buffer.substr(buffer.find('!') + 1, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - (buffer.find('!') + 1) : buffer.length() - 1 - (buffer.find('!') + 1));
-            serv->getBot().findCmd(serv, FIND_CHANNEL(msgtarget), sd, command);
+            serv->getBot()->findCmd(serv, FIND_CHANNEL(msgtarget), sd, command);
         }
         else if ((FIND_CHANNEL(msgtarget)->getMode().find("a") != std::string::npos))
         {
@@ -54,7 +54,24 @@ void privmsg(Server *serv, std::string buffer, int sd)
     }
     else
     {
-        if ((userToSendSd = serv->searchUserByNickname(msgtarget)) == -1)
+        if (msgtarget.compare(serv->getBot()->getName()) == 0)
+        {
+            int k = 0;
+            int j;
+            std::string character;
+            for (j = 0; buffer[j] && k < 2; j++)
+                if (buffer[j] == ' ')
+                    k++;
+            if (buffer[j] == ':')
+                character = buffer.substr(j + 1, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - (j + 1) : buffer.length() - 1 - (j + 1));
+            else
+                character = buffer.substr(j, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - j : buffer.length() - 1 - j);
+            if (character.size() != 1)
+                sendMessage(":" + serv->getBot()->getName() + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You have to put only one character.", sd);
+            else
+                serv->getBot()->hangmanGame(serv, character[0], sd);
+        }
+        else if ((userToSendSd = serv->searchUserByNickname(msgtarget)) == -1)
             sendMessage(sendRplErr(401, serv, FIND_USER(sd), msgtarget, ""), sd);
         else
             sendMessage(userAnswer, userToSendSd);

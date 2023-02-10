@@ -20,7 +20,7 @@ class Server{
 		bool _isRestart;
 		int newSocket();
 		void newConnection(void);
-		IRCbot _bot;
+		IRCbot *_bot;
 
 	public:
 		Server(const std::string &port, const std::string &password);
@@ -31,7 +31,7 @@ class Server{
 		std::string receiveMessage(int sd) const;
 		std::string getServerName() const;
 		std::string getPort() const;
-		IRCbot getBot() const;
+		IRCbot *getBot() const;
 		struct sockaddr_in getServer();
 		void setChannels(std::string channelName, Channel *chan);
 		void setUsers(int sd, User *user);

@@ -20,11 +20,13 @@ Server::Server(const std::string &port, const std::string &password) : _port(por
 	this->_commandhandler.insert(std::pair<std::string, command>("QUIT", &quit));
 	this->_commandhandler.insert(std::pair<std::string, command>("RESTART", &restart));
 	this->_commandhandler.insert(std::pair<std::string, command>("restart", &restart));
+	this->_bot = new IRCbot;
 }
 
 Server::~Server()
 {
 	this->_commandhandler.clear();
+	delete this->_bot;
 }
 
 int Server::newSocket()
@@ -323,7 +325,7 @@ struct sockaddr_in Server::getServer()
 	return this->_server;
 }
 
-IRCbot Server::getBot() const
+IRCbot* Server::getBot() const
 {
 	return this->_bot;
 }

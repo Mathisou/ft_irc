@@ -11,6 +11,7 @@ class IRCbot
 
 	private:
 		std::map<std::string, command> _commandhandler;
+		std::map<int, std::pair<std::string, std::string> > _hangmanWords;
 		std::string _name;
 		std::set<std::string> _channels;
 
@@ -18,8 +19,11 @@ class IRCbot
 		IRCbot();
 		virtual ~IRCbot();
 		std::string getName() const;
+		std::map<int, std::pair<std::string, std::string> > & getHangmanWords();
 		void addChannel(std::string channelName);
-		void findCmd(Server * serv, Channel *chan, int sd, std::string cmd);	
+		void findCmd(Server * serv, Channel *chan, int sd, std::string cmd);
+		void hangmanGame(Server *serv, char c, int sd);
+		void insertWord(std::string message, std::string messageGuess, int sd);
 };
 
 void connect(Server *serv, Channel *chan, int sd);
@@ -28,4 +32,4 @@ void makeJoke(Server *serv, Channel *chan, int sd);
 void giveTime(Server *serv, Channel *chan, int sd);
 void help(Server *serv, Channel *chan, int sd);
 void giveDate(Server *serv, Channel *chan, int sd);
-void hangmanGame(Server *serv, Channel *chan, int sd);
+void startHangmanGame(Server *serv, Channel *chan, int sd);
