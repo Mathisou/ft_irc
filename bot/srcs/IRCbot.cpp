@@ -11,21 +11,15 @@ IRCbot::IRCbot() : _name("ArmendestheBOT")
     this->_commandhandler.insert(std::pair<std::string, command>("sleep", &quit));
 }
 
-IRCbot::~IRCbot(){this->_channels.clear();}
-
-void IRCbot::addChannel(std::string channelName)
+IRCbot::~IRCbot()
 {
-    this->_channels.insert(channelName);
+    this->_commandhandler.clear();
+    this->_hangmanWords.clear();
 }
 
 std::string IRCbot::getName() const
 {
     return this->_name;
-}
-
-std::map<int, std::pair<std::string, std::string> > & IRCbot::getHangmanWords()
-{
-    return this->_hangmanWords;
 }
 
 
@@ -173,47 +167,77 @@ void help(Server *serv, Channel *chan, int sd)
 
 void IRCbot::insertWord(std::string message, std::string messageGuess, int sd)
 {
-    this->_hangmanWords.insert(std::pair<int, std::pair<std::string, std::string> >(sd, std::pair<std::string, std::string>(message, messageGuess)));
+    std::pair<std::string, int> pr = std::pair<std::string, int>(messageGuess, 10);
+    this->_hangmanWords.insert(std::pair<int, std::pair<std::string, std::pair<std::string, int > > >(sd, std::pair<std::string, std::pair<std::string, int> >(message, pr)));
 }
 
-void IRCbot::hangmanGame(Server *serv, char c, int sd)
+Channel *userInChanBot(Server *serv, User *user)
 {
-    // if (serv->getBot().getHangmanWords().find(sd) != serv->getBot().getHangmanWords().end())
-    if (this->_hangmanWords.find(sd) != this->_hangmanWords.end())
+    for (std::set<std::string>::iterator it = user->getChannels().begin(); it != user->getChannels().end(); it++)
+        if (FIND_CHANNEL(*it)->getBot() == true)
+            return FIND_CHANNEL(*it);
+    return NULL;
+}
+
+void IRCbot::hangmanGame(Server *serv, std::string str, int sd)
+{
+    Channel *tmp;
+    if (str.compare("play") == 0 && (tmp = userInChanBot(serv, FIND_USER(sd))) != NULL)
+        startHangmanGame(serv, tmp, sd);
+    else if (this->_hangmanWords.find(sd) != this->_hangmanWords.end())
     {
-        std::string message = this->_hangmanWords.find(sd)->second.first;
-        std::string &messageGuess = this->_hangmanWords.find(sd)->second.second;
-        std::cout << message << "\nWTF\n" << messageGuess << std::endl;
-        if (message.find(c) != std::string::npos)
-        {
-            // std::cout << message.size() 
-            for (int i = 0;message[i];i++)
-                if (message[i] == c)
-                    messageGuess[i] = c;
-            sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Nice!", sd);
-        }
+        if (str.size() != 1)
+            sendMessage(":" + serv->getBot()->getName() + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You have to put only one character.", sd);
+        else if (str[0] < 65 || (str[0] > 90 && str[0] < 97) || str[0] > 122)
+            sendMessage(":" + serv->getBot()->getName() + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You have to put a letter (Capital or not).", sd);
         else
-            sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :This character is not in the word... You have [] try left.", sd);
-        // std::string newWord; //not working
-        // int j = 0;
-        // for(int i = 0;messageGuess[i];i++)
-        // {
-        //     std::cout << "test" << std::endl;
-        //     newWord[j] = messageGuess[i];
-        //     if (messageGuess[i + 1])
-        //         newWord[++j] = ' ';
-        //     j++;
-        // }
-        if (messageGuess.find('_') == std::string::npos)
         {
-            sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Congratulation! You found the word : " + messageGuess, sd);
-            this->_hangmanWords.erase(sd);
+            char c = str[0];
+            std::string message = this->_hangmanWords.find(sd)->second.first;
+            std::string &messageGuess = this->_hangmanWords.find(sd)->second.second.first;
+            int &life = this->_hangmanWords.find(sd)->second.second.second;
+            if (message.find(tolower(c)) != std::string::npos || message.find(toupper(c)) != std::string::npos)
+            {
+                if (messageGuess.find(c) != std::string::npos)
+                    sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You already found this letter.", sd);
+                else
+                {
+                    for (int i = 0; message[i]; i++)
+                        if (toupper(message[i]) == toupper(c))
+                            messageGuess[i] = message[i];
+                    sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Nice!", sd);
+                }
+            }
+            else
+            {
+                life--;
+                if (life == 0)
+                {
+                    sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You lost the game, the word was : " + message + ".", sd);
+                    this->_hangmanWords.erase(sd);
+                    return;
+                }
+                else
+                {
+                    std::stringstream ss;
+                    ss << life;
+                    if (life > 1)
+                        sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :This character is not in the word... You have " + ss.str() + " tries left.", sd);
+                    else
+                        sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :This character is not in the word... You have " + ss.str() + " try left.", sd);
+                }
+            }
+            if (messageGuess.find('_') == std::string::npos)
+            {
+                sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Congratulation! You found the word : " + messageGuess, sd);
+                this->_hangmanWords.erase(sd);
+            }
+            else
+                sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Your word is : " + messageGuess, sd);
         }
-        else
-            sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :Your word is : " + messageGuess, sd);
     }
     else
-        sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You didnt start the game yet...", sd);
+        sendMessage(":" + this->_name + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You didnt start the game yet... Type \"play\" to start another game.", sd);
 }
 
 void startHangmanGame(Server *serv, Channel *chan, int sd)
@@ -240,7 +264,6 @@ void startHangmanGame(Server *serv, Channel *chan, int sd)
         std::string result;
         result.insert(0, word.size(), '_');
         serv->getBot()->insertWord(word, result, sd);
-        // serv->getBot().getHangmanWords().insert(std::pair<int, std::pair<std::string, std::string> >(sd, std::pair<std::string, std::string>(word, result)));
         sendMessage(":" + serv->getBot()->getName() + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You are playing Hangman Game, enter a letter to start the game.", sd);
     }
     else

@@ -22,7 +22,7 @@ void oper(Server *serv, std::string buffer, int sd)
     if (serv->searchUserByNickname(user) == -1)
     {
         sendMessage(sendRplErr(401, serv, FIND_USER(sd), user, ""), sd);
-        return ;
+        return;
     }
     password = buf.substr(k, buf.find('\r') != std::string::npos ? buf.length() - 2 - k : buf.length() - 1 - k);
     if (password.empty())

@@ -66,15 +66,11 @@ void privmsg(Server *serv, std::string buffer, int sd)
                 character = buffer.substr(j + 1, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - (j + 1) : buffer.length() - 1 - (j + 1));
             else
                 character = buffer.substr(j, buffer.find('\r') != std::string::npos ? buffer.length() - 2 - j : buffer.length() - 1 - j);
-            if (character.size() != 1)
-                sendMessage(":" + serv->getBot()->getName() + " PRIVMSG " + FIND_USER(sd)->getNickname() + " :You have to put only one character.", sd);
-            else
-                serv->getBot()->hangmanGame(serv, character[0], sd);
+            serv->getBot()->hangmanGame(serv, character, sd);
         }
         else if ((userToSendSd = serv->searchUserByNickname(msgtarget)) == -1)
             sendMessage(sendRplErr(401, serv, FIND_USER(sd), msgtarget, ""), sd);
         else
             sendMessage(userAnswer, userToSendSd);
     }
-    
 }
