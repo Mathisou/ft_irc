@@ -65,7 +65,7 @@ void quit(Server *serv, Channel *chan, int sd)
 
 void makeJoke(Server *serv, Channel *chan, int sd)
 {
-    int lines = 0;
+    int lines = 1;
     if (chan && chan->getBot() == true)
     {
         srand(time(NULL));
@@ -242,7 +242,7 @@ void IRCbot::hangmanGame(Server *serv, std::string str, int sd)
 
 void startHangmanGame(Server *serv, Channel *chan, int sd)
 {
-    int lines = 0;
+    int lines = 1;
     if (chan && chan->getBot() == true)
     {
         srand(time(NULL));
