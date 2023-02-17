@@ -1,10 +1,10 @@
 Usage :
 
-    `brew install irssi`
+`brew install irssi`
     
-    `make`
+`make`
     
-    `./server <port> <password>`
+`./server <port> <password>`
 
 NOTE :
   - Only irc port are allowed. (6660->6669, 6679 and 6697).
