@@ -126,6 +126,5 @@ std::string sendRplErr(int code, Server *serv, User *user, std::string args, std
 		default:
 			;
     }
-    std::cout << ret << std::endl;
     return ret;
 }
