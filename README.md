@@ -39,7 +39,7 @@ IRSSI:
 - First open IRSSI typing `irssi` on the bash
 - Connect with `/connect <ip> <port> <password>`
 - Then you should start all commands with a `/` followed by one of the command above.
-- You can type `/help` to see all irssi commands (even those we dont handle) because some commands have a different syntax. (Example: PRIVMSG -> /msg)
+- You can type `/help` to see all irssi commands (even those we don't handle) because some commands have a different syntax. (Example: PRIVMSG -> /msg)
           
 netcat:
       
@@ -52,4 +52,4 @@ netcat:
 - To use commands now, you have to follow the syntax above.
 
 
-Enjoy your chat with your friends !
+Enjoy the chat with your friends !
