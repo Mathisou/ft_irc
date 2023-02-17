@@ -14,7 +14,7 @@ This project was carried out in teams of 2.
 
 We created an IRC server based on RFC 2812.
 
-You should be able to use the client of your choice, but keep in mind that we did it with IRSSI and didnt test it out with other clients.
+You should be able to use the client of your choice, but keep in mind that we did it with IRSSI and didn't test it out with other clients.
 It is working with netcat too.
 
 Commands handled:
