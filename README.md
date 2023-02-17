@@ -34,21 +34,21 @@ Commands handled :
     
 How to use:
 
-      IRSSI:
+IRSSI:
         
-          - First open IRSSI typing `irssi` on the bash
-          - Connect with `/connect <ip> <port> <password>`
-          - Then you should start all commands with a `/` followed by one of the command above.
+- First open IRSSI typing `irssi` on the bash
+- Connect with `/connect <ip> <port> <password>`
+- Then you should start all commands with a `/` followed by one of the command above.
           
-      netcat:
+netcat:
       
-          - Type `nc <ip> <port>` on the bash
-          - First you have to enter the server password `PASS <password>`
-          - Then your nickname `NICK <nickname>`
-          - Finally your username, hostname, server name and real name `USER <username> <hostname> <server name> <real name>`
-          - If one of those steps went wrong, you have to do restart the connexion process.
-          - Otherwise well played you are connected on the server!
-          - To use commands now, you have to follow the syntax above.
+- Type `nc <ip> <port>` on the bash
+- First you have to enter the server password `PASS <password>`
+- Then your nickname `NICK <nickname>`
+- Finally your username, hostname, server name and real name `USER <username> <hostname> <server name> <real name>`
+- If one of those steps went wrong, you have to do restart the connexion process.
+- Otherwise well played you are connected on the server!
+- To use commands now, you have to follow the syntax above.
 
 
 Enjoy your chat with your friends !
