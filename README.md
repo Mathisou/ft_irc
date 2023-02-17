@@ -7,7 +7,7 @@ Usage :
 `./server <port> <password>`
 
 NOTE :
-  - Only irc port are allowed. (6660->6669, 6679 and 6697).
+  - Only irc ports are allowed. (6660->6669, 6679 and 6697).
   - The password have to contains only 4 digits and nothing else.
 
 This project was carried out in teams of 2.
