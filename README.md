@@ -10,7 +10,7 @@ NOTE :
   - Only irc ports are allowed. (6660->6669, 6679 and 6697).
   - The password have to contains only 4 digits and nothing else.
 
-This project was carried out in teams of 2.
+This project was carried out in team of 2.
 
 We created an IRC server based on RFC 2812.
 
@@ -47,8 +47,8 @@ netcat:
 - First you have to enter the server password `PASS <password>`
 - Then your nickname `NICK <nickname>`
 - Finally your username, hostname, server name and real name `USER <username> <hostname> <server name> <real name>`
-- If one of those steps went wrong, you have to do restart the connexion process.
-- Otherwise well played you are connected on the server!
+- If one of those steps went wrong, you have to restart the connexion process.
+- Otherwise well played you are connected to the server!
 - To use commands now, you have to follow the syntax above.
 
 
